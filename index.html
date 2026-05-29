@@ -157,7 +157,13 @@ body {
   background: linear-gradient(90deg, var(--ocean-light), var(--coral));
 }
 
-.question-box {
+.countdown-banner {
+  text-align:center; padding:10px 16px; margin:0 20px 8px;
+  background:var(--gold); color:white; border-radius:20px;
+  font-size:14px; font-weight:600; animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.75} }
+
   background:var(--white); border-radius:var(--radius); padding:24px 20px;
   box-shadow:var(--shadow); text-align:center; margin-bottom:16px;
 }
@@ -485,6 +491,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     <div class="wave">🏝️</div>
     <h2 id="greeting-text">准备出发！</h2>
   </div>
+  <div id="countdown-banner" class="countdown-banner" style="display:none">距活动开始 --</div>
   <div class="stats-row">
     <div class="stat-card">
       <div class="val" id="stat-rank">-</div>
@@ -790,6 +797,17 @@ var EMBEDDED_PLAYERS = [
 let currentPlayer = null;
 let currentScreen = 'login';
 
+// ========== EVENT TIME GATE ==========
+const EVENT_START = new Date('2026-06-12T08:00:00+08:00');
+function isEventActive() { return Date.now() >= EVENT_START.getTime(); }
+function timeUntilEvent() {
+  const diff = EVENT_START.getTime() - Date.now();
+  if (diff <= 0) return {d:0,h:0,m:0};
+  return { d:Math.floor(diff/86400000), h:Math.floor((diff%86400000)/3600000), m:Math.floor((diff%3600000)/60000) };
+}
+function getScoreKey(base) { return isEventActive() ? base : 'test_' + base; }
+function eventDaysLeft() { const t = timeUntilEvent(); return t.d > 1 ? t.d+'天' : t.d === 1 ? '1天' + t.h + '小时' : t.h > 0 ? t.h+'小时'+t.m+'分钟' : t.m+'分钟'; }
+
 // Quiz state
 let quizRounds = [];
 let currentRoundIdx = 0;
@@ -951,8 +969,8 @@ async function init() {
 
   // Init bingo
   bingoItems = [...bingoData];
-  bingoChecked = new Set(JSON.parse(localStorage.getItem('bingo_checked')||'[]'));
-  bingoLines = new Set(JSON.parse(localStorage.getItem('bingo_lines')||'[]'));
+  bingoChecked = new Set(JSON.parse(localStorage.getItem(getScoreKey('bingo_checked'))||'[]'));
+  bingoLines = new Set(JSON.parse(localStorage.getItem(getScoreKey('bingo_lines'))||'[]'));
 
   // Check if already logged in
   const saved = localStorage.getItem('player');
@@ -1030,19 +1048,37 @@ function showScreen(id) {
 // ========== HOME ==========
 function updateHome() {
   if (!currentPlayer) return;
+  const eventOn = isEventActive();
+
   document.getElementById('greeting-text').innerHTML =
     `你好，<b>${currentPlayer.name}</b>！<br><span style="font-size:14px;color:var(--text-light)">${currentPlayer.bus}号车 · 准备出发</span>`;
 
   const totalPts = getTotalScore();
   document.getElementById('pts-display').textContent = '🌟 ' + totalPts;
 
-  // Compute ranks
+  if (!eventOn) {
+    const t = timeUntilEvent();
+    document.getElementById('stat-rank').textContent = '--';
+    document.getElementById('stat-team').textContent = '--';
+    document.getElementById('stat-bingo').textContent = '--';
+    // Show countdown banner
+    const banner = document.getElementById('countdown-banner');
+    if (banner) {
+      banner.textContent = '距活动开始 ' + eventDaysLeft();
+      banner.style.display = 'block';
+    }
+    return;
+  }
+
+  // Hide countdown when event active
+  const banner = document.getElementById('countdown-banner');
+  if (banner) banner.style.display = 'none';
+
   const allScores = getAllPlayerScores();
   allScores.sort((a,b) => b.total - a.total);
   const myRank = allScores.findIndex(s => s.name === currentPlayer.name) + 1;
   document.getElementById('stat-rank').textContent = myRank > 0 ? '#' + myRank : '-';
 
-  // Team rank
   const teamScores = getTeamScores();
   const teamRank = teamScores.findIndex(t => t.team === currentPlayer.team) + 1;
   document.getElementById('stat-team').textContent = teamRank > 0 ? '#' + teamRank : '-';
@@ -1061,17 +1097,18 @@ function updateAllScores() {
 
 function getTotalScore() {
   if (!currentPlayer) return 0;
-  const quizS = JSON.parse(localStorage.getItem('quiz_score_' + currentPlayer.name) || '0');
-  const missionS = JSON.parse(localStorage.getItem('mission_score_' + currentPlayer.name) || '0');
+  const quizS = JSON.parse(localStorage.getItem(getScoreKey('quiz_score_' + currentPlayer.name)) || '0');
+  const missionS = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + currentPlayer.name)) || '0');
   const bingoS = bingoLines.size * 50;
   return quizS + missionS + bingoS;
 }
 
 function getAllPlayerScores() {
   return playerData.map(p => {
-    const quizS = JSON.parse(localStorage.getItem('quiz_score_' + p.name) || '0');
-    const missionS = JSON.parse(localStorage.getItem('mission_score_' + p.name) || '0');
-    const bingoS = JSON.parse(localStorage.getItem('bingo_lines_' + p.name) || '[]').length * 50;
+    const quizS = JSON.parse(localStorage.getItem(getScoreKey('quiz_score_' + p.name)) || '0');
+    const missionS = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + p.name)) || '0');
+    const missionS = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + p.name)) || '0');
+    const bingoS = JSON.parse(localStorage.getItem(getScoreKey('bingo_lines_' + p.name)) || '[]').length * 50;
     // Use bingoLines for current player
     const bS = p.name === (currentPlayer?.name||'') ? bingoLines.size * 50 : bingoS;
     return { name:p.name, team:p.team, bus:p.bus, total:quizS+missionS+bS, quiz:quizS, mission:missionS, bingo:bS };
@@ -1143,7 +1180,7 @@ function continueNextRound() {
         <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
       </div>
     `;
-    localStorage.setItem('quiz_score_' + currentPlayer.name, JSON.stringify(quizScore));
+    localStorage.setItem(getScoreKey('quiz_score_' + currentPlayer.name), JSON.stringify(quizScore));
     updateAllScores();
     return;
   }
@@ -1254,7 +1291,7 @@ function quizNextQuestion() {
         <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
       </div>
     `;
-    localStorage.setItem('quiz_score_' + currentPlayer.name, JSON.stringify(quizScore));
+    localStorage.setItem(getScoreKey('quiz_score_' + currentPlayer.name), JSON.stringify(quizScore));
     updateAllScores();
     return;
     }
@@ -1278,9 +1315,9 @@ function switchMissionDay(day, btn) {
 function renderMissions(day) {
   const missions = missionsData[day] || [];
   const list = document.getElementById('mission-list');
-  const key = 'missions_done_' + (currentPlayer?.name||'');
+  const key = getScoreKey('missions_done_' + (currentPlayer?.name||''));
   const completed = JSON.parse(localStorage.getItem(key) || '{}');
-  const photosKey = 'mission_photos_' + (currentPlayer?.name||'');
+  const photosKey = getScoreKey('mission_photos_' + (currentPlayer?.name||''));
   const photos = JSON.parse(localStorage.getItem(photosKey) || '{}');
 
   list.innerHTML = missions.map(m => {
@@ -1346,21 +1383,21 @@ function saveMissionPhoto(dataUrl) {
   const name = currentPlayer?.name||'';
 
   // Save photo
-  const photosKey = 'mission_photos_' + name;
+  const photosKey = getScoreKey('mission_photos_' + name);
   const photos = JSON.parse(localStorage.getItem(photosKey) || '{}');
   photos[id] = dataUrl;
   localStorage.setItem(photosKey, JSON.stringify(photos));
 
   // Mark as completed
-  const completedKey = 'missions_done_' + name;
+  const completedKey = getScoreKey('missions_done_' + name);
   const completed = JSON.parse(localStorage.getItem(completedKey) || '{}');
   completed[id] = { time: Date.now(), pts };
   localStorage.setItem(completedKey, JSON.stringify(completed));
 
   // Update score
-  let missionScore = JSON.parse(localStorage.getItem('mission_score_' + name) || '0');
+  let missionScore = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + name)) || '0');
   missionScore += pts;
-  localStorage.setItem('mission_score_' + name, JSON.stringify(missionScore));
+  localStorage.setItem(getScoreKey('mission_score_' + name), JSON.stringify(missionScore));
 
   pendingMissionId = null;
   pendingMissionPts = 0;
@@ -1381,7 +1418,7 @@ function viewFullPhoto(dataUrl) {
 
 // ========== BINGO ==========
 // Key for storing bingo photos per player
-function bingoPhotoKey() { return 'bingo_photos_' + (currentPlayer?.name||'anonymous'); }
+function bingoPhotoKey() { return getScoreKey('bingo_photos_' + (currentPlayer?.name||'anonymous')); }
 let bingoPhotos = {};
 let bingoModalIdx = -1;
 
@@ -1555,8 +1592,8 @@ function checkBingoLines() {
 }
 
 function saveBingoState() {
-  localStorage.setItem('bingo_checked', JSON.stringify([...bingoChecked]));
-  localStorage.setItem('bingo_lines', JSON.stringify([...bingoLines]));
+  localStorage.setItem(getScoreKey('bingo_checked'), JSON.stringify([...bingoChecked]));
+  localStorage.setItem(getScoreKey('bingo_lines'), JSON.stringify([...bingoLines]));
 }
 
 // ========== LEADERBOARD ==========
@@ -1569,6 +1606,16 @@ function switchLBTab(tab, btn) {
 
 function renderLeaderboard(tab) {
   const list = document.getElementById('rank-list');
+  if (!isEventActive()) {
+    const t = timeUntilEvent();
+    list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-light)">
+      <div style="font-size:48px;margin-bottom:16px">🏆</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px">积分榜尚未开放</div>
+      <div style="font-size:13px">活动将于6月12日8:00正式开始，届时积分榜自动开启</div>
+      <div style="font-size:24px;font-weight:800;color:var(--ocean);margin-top:16px">${eventDaysLeft()}</div>
+    </div>`;
+    return;
+  }
   if (tab === 'personal') {
     const scores = getAllPlayerScores();
     scores.sort((a,b) => b.total - a.total);
@@ -1746,7 +1793,7 @@ function handleHostQuestion(roundIdx, qIdx) {
   quizRounds = [round];
   currentRoundIdx = 0;
   currentQIdx = qIdx;
-  quizScore = JSON.parse(localStorage.getItem('quiz_score_' + (currentPlayer?.name||'anonymous')) || '0');
+  quizScore = JSON.parse(localStorage.getItem(getScoreKey('quiz_score_' + (currentPlayer?.name||'anonymous'))) || '0');
   quizAnswered = false;
   navTo('quiz');
 
