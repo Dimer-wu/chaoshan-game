@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>潮汕奇遇记 - 汕头&南澳岛之旅</title>
+<style>
+:root {
+  --ocean: #0D7377;
+  --ocean-light: #14A3A8;
+  --coral: #FF6B6B;
+  --coral-soft: #FFE0E0;
+  --gold: #FFD93D;
+  --gold-dark: #E6B800;
+  --sand: #FFF8F0;
+  --sand-dark: #F0E6D8;
+  --text: #2C3E50;
+  --text-light: #7F8C8D;
+  --white: #FFFFFF;
+  --bg: #FFF8F0;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== SCREENS ===== */
+.screen { display:none; padding: 20px 16px 100px; min-height: 100vh; }
+.screen.active { display:block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== TOP BAR ===== */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 12px 0; margin-bottom: 16px;
+}
+.topbar .back {
+  width:36px; height:36px; border-radius:50%; background:var(--white);
+  border:none; font-size:18px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);
+}
+.topbar .title { font-size:18px; font-weight:700; color:var(--ocean); }
+.topbar .pts {
+  background: linear-gradient(135deg, var(--gold), #FFC107);
+  padding: 6px 14px; border-radius: 20px; font-size:13px;
+  font-weight:700; color: #7B6100;
+}
+
+/* ===== LOGIN SCREEN ===== */
+.login-box {
+  background: var(--white); border-radius: var(--radius);
+  padding: 32px 24px; box-shadow: var(--shadow); text-align: center;
+}
+.login-box .logo { font-size:48px; margin-bottom:8px; }
+.login-box h1 { font-size:24px; color:var(--ocean); margin-bottom:4px; }
+.login-box .sub { font-size:13px; color:var(--text-light); margin-bottom:24px; }
+.login-box label { display:block; text-align:left; font-size:13px; color:var(--text-light); margin-bottom:6px; }
+.login-box input, .login-box select {
+  width:100%; padding:12px 14px; border:2px solid #E8E8E8; border-radius:var(--radius-sm);
+  font-size:16px; margin-bottom:16px; outline:none; transition:border 0.2s;
+  background: var(--white);
+}
+.login-box input:focus, .login-box select:focus { border-color:var(--ocean-light); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display:inline-block; padding:12px 28px; border-radius:25px; font-size:15px;
+  font-weight:600; border:none; cursor:pointer; transition:transform 0.15s,box-shadow 0.15s;
+  text-align:center; text-decoration:none;
+}
+.btn:active { transform:scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
+  color: var(--white); width:100%; box-shadow: 0 4px 14px rgba(13,115,119,0.3);
+}
+.btn-coral { background:var(--coral); color:var(--white); }
+.btn-gold { background:var(--gold); color:#7B6100; }
+.btn-outline {
+  background:var(--white); color:var(--ocean); border:2px solid var(--ocean);
+}
+
+/* ===== HOME SCREEN ===== */
+.hero {
+  text-align:center; padding: 20px 0 10px;
+}
+.hero .wave { font-size:40px; margin-bottom:4px; }
+.hero h2 { font-size:22px; color:var(--ocean); }
+.hero .greeting { font-size:14px; color:var(--text-light); margin-top:4px; }
+.hero .greeting b { color:var(--coral); }
+
+.stats-row {
+  display:flex; gap:12px; margin:16px 0;
+}
+.stat-card {
+  flex:1; background:var(--white); border-radius:var(--radius);
+  padding:16px; text-align:center; box-shadow:var(--shadow);
+}
+.stat-card .val { font-size:28px; font-weight:800; color:var(--ocean); }
+.stat-card .lbl { font-size:12px; color:var(--text-light); margin-top:4px; }
+
+.module-grid { display:flex; flex-direction:column; gap:14px; margin-top:20px; }
+.module-card {
+  background:var(--white); border-radius:var(--radius); padding:20px;
+  box-shadow:var(--shadow); cursor:pointer; transition:transform 0.15s;
+  display:flex; align-items:center; gap:16px; position:relative; overflow:hidden;
+}
+.module-card:active { transform:scale(0.98); }
+.module-card .icon {
+  width:52px; height:52px; border-radius:14px; display:flex;
+  align-items:center; justify-content:center; font-size:26px; flex-shrink:0;
+}
+.module-card .info { flex:1; }
+.module-card .info h3 { font-size:16px; margin-bottom:3px; }
+.module-card .info p { font-size:12px; color:var(--text-light); line-height:1.4; }
+.module-card .arrow { font-size:20px; color:#CCC; }
+.module-card .badge {
+  position:absolute; top:12px; right:12px; background:var(--coral);
+  color:white; font-size:11px; padding:3px 8px; border-radius:10px; font-weight:600;
+}
+.icon-quiz { background:#E0F7F8; }
+.icon-mission { background:#FFE0E0; }
+.icon-bingo { background:#FFF3D6; }
+
+.bottom-nav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px; background:var(--white);
+  display:flex; justify-content:space-around; padding:10px 0 14px;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.05); z-index:100;
+}
+.nav-item {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:11px; color:var(--text-light); cursor:pointer; border:none; background:none;
+}
+.nav-item.active { color:var(--ocean); font-weight:600; }
+.nav-item .nav-icon { font-size:22px; }
+
+/* ===== QUIZ ===== */
+.quiz-header { text-align:center; margin-bottom:20px; }
+.quiz-header .round { font-size:13px; color:var(--text-light); }
+.quiz-header .q-num { font-size:14px; color:var(--ocean); font-weight:600; margin-top:4px; }
+
+.timer-bar {
+  height:6px; background:#E8E8E8; border-radius:3px; margin-bottom:20px; overflow:hidden;
+}
+.timer-fill {
+  height:100%; border-radius:3px; transition:width 1s linear;
+  background: linear-gradient(90deg, var(--ocean-light), var(--coral));
+}
+
+.question-box {
+  background:var(--white); border-radius:var(--radius); padding:24px 20px;
+  box-shadow:var(--shadow); text-align:center; margin-bottom:16px;
+}
+.question-box .q-text { font-size:17px; line-height:1.6; font-weight:500; }
+
+.answer-grid { display:flex; flex-direction:column; gap:10px; }
+.answer-btn {
+  background:var(--white); border:2px solid #E8E8E8; border-radius:var(--radius-sm);
+  padding:14px 18px; font-size:15px; text-align:left; cursor:pointer;
+  transition:all 0.2s; display:flex; align-items:center; gap:12px;
+}
+.answer-btn .opt {
+  width:32px; height:32px; border-radius:50%; background:#F0F0F0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; flex-shrink:0; color:var(--text);
+}
+.answer-btn:active { transform:scale(0.98); }
+.answer-btn.correct { border-color:#4CAF50; background:#E8F5E9; }
+.answer-btn.correct .opt { background:#4CAF50; color:white; }
+.answer-btn.wrong { border-color:var(--coral); background:var(--coral-soft); }
+.answer-btn.wrong .opt { background:var(--coral); color:white; }
+.answer-btn:disabled { pointer-events:none; }
+
+.quiz-result {
+  text-align:center; padding:20px; background:var(--white);
+  border-radius:var(--radius); box-shadow:var(--shadow); margin-top:16px;
+}
+.quiz-result .score { font-size:36px; font-weight:800; color:var(--ocean); }
+.quiz-result .msg { font-size:14px; color:var(--text-light); margin-top:4px; }
+
+/* ===== MISSIONS ===== */
+.day-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.day-tab {
+  flex:1; padding:10px; border-radius:20px; border:none; font-size:13px;
+  font-weight:600; cursor:pointer; background:var(--white); color:var(--text-light);
+}
+.day-tab.active { background:var(--ocean); color:white; }
+
+.mission-list { display:flex; flex-direction:column; gap:12px; }
+.mission-card {
+  background:var(--white); border-radius:var(--radius); padding:16px;
+  box-shadow:var(--shadow);
+}
+.mission-card .m-title { font-size:15px; font-weight:600; margin-bottom:8px; }
+.mission-card .m-desc { font-size:13px; color:var(--text-light); margin-bottom:12px; }
+.mission-card .m-points {
+  display:inline-block; background:var(--gold); color:#7B6100;
+  padding:3px 10px; border-radius:10px; font-size:12px; font-weight:600;
+}
+.mission-card .m-actions { margin-top:12px; display:flex; gap:10px; }
+.mission-card .m-photo {
+  width:100%; border-radius:var(--radius-sm); margin-top:10px;
+  max-height:200px; object-fit:cover;
+}
+.upload-area {
+  border:2px dashed #D0D0D0; border-radius:var(--radius-sm);
+  padding:18px; text-align:center; color:var(--ocean); font-size:15px;
+  cursor:pointer; margin-top:12px; transition:all 0.2s;
+  font-weight:600; background:#F5FBFC;
+}
+.upload-area:active { border-color:var(--ocean-light); background:#E8F6F8; transform:scale(0.98); }
+.m-photo { cursor:pointer; transition:opacity 0.2s; }
+.m-photo:active { opacity:0.8; }
+.vote-btns { display:flex; gap:8px; align-items:center; }
+.vote-btns button {
+  padding:6px 14px; border-radius:15px; border:1px solid #E0E0E0;
+  background:white; font-size:13px; cursor:pointer;
+}
+.vote-btns .voted { background:var(--coral-soft); border-color:var(--coral); }
+
+/* ===== BINGO ===== */
+.bingo-grid {
+  display:grid; grid-template-columns: repeat(5, 1fr); gap:6px;
+  margin: 20px 0;
+}
+.bingo-cell {
+  aspect-ratio:1; border-radius:var(--radius-sm); border:2px solid #E8E8E8;
+  background:var(--white); display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:4px; font-size:11px; cursor:pointer;
+  transition:all 0.2s; word-break:break-all; line-height:1.3;
+  user-select:none;
+}
+.bingo-cell.checked {
+  background:linear-gradient(135deg, var(--ocean), var(--ocean-light));
+  color:white; border-color:var(--ocean); font-weight:600;
+}
+.bingo-cell.bingo-line {
+  background:linear-gradient(135deg, var(--gold), #FFC107);
+  color:#7B6100; border-color:var(--gold-dark); font-weight:700;
+  animation: bingoGlow 0.8s ease-in-out infinite alternate;
+}
+@keyframes bingoGlow { from{box-shadow:0 0 8px rgba(255,217,61,0.5)} to{box-shadow:0 0 20px rgba(255,217,61,0.9)} }
+.bingo-cell.free { background:var(--sand-dark); font-weight:700; font-size:12px; }
+
+.bingo-stats {
+  text-align:center; padding:16px; background:var(--white);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+}
+.bingo-stats .bingo-count { font-size:32px; font-weight:800; color:var(--gold-dark); }
+
+/* ===== LEADERBOARD ===== */
+.lb-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.lb-tab {
+  flex:1; padding:10px; border-radius:20px; border:none; font-size:13px;
+  font-weight:600; cursor:pointer; background:var(--white); color:var(--text-light);
+}
+.lb-tab.active { background:var(--coral); color:white; }
+
+.rank-list { display:flex; flex-direction:column; gap:8px; }
+.rank-item {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  background:var(--white); border-radius:var(--radius-sm); box-shadow:0 1px 4px rgba(0,0,0,0.04);
+}
+.rank-item.me { border:2px solid var(--ocean); background:#F0FAFA; }
+.rank-num {
+  width:30px; height:30px; border-radius:50%; display:flex;
+  align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;
+}
+.rank-num.gold { background:var(--gold); color:#7B6100; }
+.rank-num.silver { background:#E0E0E0; color:#555; }
+.rank-num.bronze { background:#FFDAB9; color:#8B4513; }
+.rank-num.normal { background:#F0F0F0; color:var(--text-light); }
+.rank-info { flex:1; }
+.rank-name { font-size:15px; font-weight:600; }
+.rank-team { font-size:12px; color:var(--text-light); }
+.rank-pts { font-size:18px; font-weight:800; color:var(--ocean); }
+
+/* ===== TOAST ===== */
+.toast {
+  position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  background:#333; color:white; padding:10px 24px; border-radius:20px;
+  font-size:14px; z-index:999; opacity:0; transition:opacity 0.3s;
+  pointer-events:none;
+}
+.toast.show { opacity:1; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-content {
+  background:var(--white); border-radius:var(--radius); padding:24px;
+  width:90%; max-width:400px; text-align:center;
+}
+.modal-content h3 { font-size:18px; margin-bottom:12px; }
+.modal-content p { font-size:14px; color:var(--text-light); margin-bottom:20px; }
+
+/* ===== BINGO PHOTO MODAL ===== */
+.bingo-modal {
+  position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300;
+  display:flex; align-items:flex-end; justify-content:center;
+  animation: fadeIn 0.2s ease;
+}
+.bingo-modal-content {
+  background:var(--white); border-radius:var(--radius) var(--radius) 0 0;
+  width:100%; max-width:480px; padding:24px 20px 36px;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.bingo-task-banner {
+  display:flex; align-items:flex-start; gap:10px;
+  background:#FFF8E1; border:1.5px solid var(--gold);
+  border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:14px;
+}
+.bingo-task-icon { font-size:24px; flex-shrink:0; }
+.bingo-task-text { font-size:14px; font-weight:600; color:#5D4037; line-height:1.5; }
+.bingo-task-hint { font-size:12px; color:#8D6E63; font-weight:400; }
+.bingo-modal-content .preview-box {
+  width:100%; height:200px; border:2px dashed #D0D0D0; border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+  overflow:hidden; position:relative; background:#FAFAFA;
+}
+.bingo-modal-content .preview-box img { width:100%; height:100%; object-fit:cover; }
+.preview-placeholder { text-align:center; }
+.preview-placeholder .placeholder { font-size:40px; color:#D0D0D0; display:block; }
+.preview-placeholder .placeholder-hint { font-size:12px; color:var(--text-light); margin-top:8px; display:block; }
+.bingo-modal-content .btn-row { display:flex; gap:12px; margin-top:8px; }
+.bingo-modal-content .btn-row button { flex:1; }
+.bingo-modal-content .cancel-btn {
+  background: #F5F5F5; border:none; padding:12px; border-radius:25px;
+  font-size:14px; color:var(--text-light); cursor:pointer; font-weight:600;
+}
+.bingo-modal-content .cancel-btn:active { background:#E8E8E8; }
+.bingo-cell.has-photo {
+  position:relative;
+}
+.bingo-cell.has-photo::after {
+  content:'📷'; position:absolute; top:2px; right:2px; font-size:8px;
+}
+.bingo-cell.checked.has-photo { color:white; }
+
+/* ===== HOST PANEL ===== */
+.host-panel {
+  background:var(--white); border-radius:var(--radius); padding:20px;
+  box-shadow:var(--shadow); margin-bottom:16px;
+}
+.host-panel h3 { font-size:17px; color:var(--ocean); margin-bottom:12px; }
+.host-status {
+  display:flex; gap:12px; margin-bottom:16px;
+}
+.host-status .stat {
+  flex:1; text-align:center; padding:12px 8px; background:#F5F9FA;
+  border-radius:var(--radius-sm);
+}
+.host-status .stat .num { font-size:24px; font-weight:800; color:var(--ocean); }
+.host-status .stat .label { font-size:11px; color:var(--text-light); margin-top:2px; }
+.host-round-select {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;
+}
+.host-round-select button {
+  padding:10px; border-radius:var(--radius-sm); border:2px solid #E8E8E8;
+  background:white; font-size:13px; cursor:pointer; font-weight:600;
+  color:var(--text); transition:all 0.15s;
+}
+.host-round-select button.active { border-color:var(--ocean); background:#E0F7F8; }
+.host-q-control { text-align:center; }
+.host-q-control .current-q {
+  font-size:15px; font-weight:600; padding:14px; background:#F5F9FA;
+  border-radius:var(--radius-sm); margin-bottom:12px;
+}
+.host-login-hint {
+  text-align:center; padding:40px 20px; color:var(--text-light);
+}
+.host-login-hint .big { font-size:48px; margin-bottom:12px; }
+
+/* ===== GUIDE SCREEN ===== */
+.guide-section { margin-bottom:20px; }
+.guide-section h3 {
+  font-size:16px; color:var(--ocean); margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.guide-step {
+  background:var(--white); border-radius:var(--radius-sm); padding:14px 16px;
+  margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  display:flex; gap:12px; align-items:flex-start;
+}
+.guide-step .step-num {
+  width:28px; height:28px; border-radius:50%; background:var(--ocean);
+  color:white; display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; flex-shrink:0;
+}
+.guide-step .step-text { font-size:13px; line-height:1.5; flex:1; }
+.guide-step .step-text b { color:var(--ocean); }
+.guide-tip {
+  background: linear-gradient(135deg, #FFF9E6, #FFF3D6);
+  border-radius:var(--radius-sm); padding:12px 16px;
+  font-size:12px; color:#7B6100; line-height:1.5;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 480px) {
+  .bingo-cell { font-size:12px; }
+}
+
+/* ===== iOS & Mobile Fixes ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari: fix 100vh issue */
+  .screen { min-height: -webkit-fill-available; }
+  input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+}
+/* WeChat & in-app browser fixes */
+@media screen and (max-width: 480px) {
+  .bingo-cell { font-size: 10px; }
+  .bottom-nav { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+}
+/* Android Chrome font boosting fix */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* Fix for older Android WebView */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Compatibility warning banner */
+.compat-warn {
+  position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:9999;
+  width:100%; max-width:480px; background:#FFF3E0; color:#E65100;
+  padding:8px 16px; font-size:12px; text-align:center; line-height:1.4;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+.compat-warn .dismiss {
+  margin-left:8px; color:#E65100; text-decoration:underline; cursor:pointer; font-weight:600;
+}
+.compat-warn.hidden { display:none; }
+</style>
+</head>
+<body>
+
+<!-- COMPATIBILITY WARNING -->
+<div class="compat-warn hidden" id="compat-warn">
+  <span id="compat-msg"></span>
+  <span class="dismiss" onclick="this.parentElement.classList.add('hidden')">知道了</span>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="screen active" id="screen-login">
+  <div style="padding-top:40px">
+    <div class="login-box">
+      <div class="logo">🏝️</div>
+      <h1>潮汕奇遇记</h1>
+      <p class="sub">汕头 & 南澳岛 · 3天2夜之旅</p>
+      <label>你的名字</label>
+      <input type="text" id="input-name" placeholder="输入姓名" maxlength="10">
+      <label>所在大巴</label>
+      <select id="input-bus">
+        <option value="">请选择大巴</option>
+      </select>
+      <button class="btn btn-primary" onclick="doLogin()" style="margin-top:8px">开始冒险 🚀</button>
+      <label style="margin-top:12px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-light);justify-content:center">
+        <input type="checkbox" id="input-host"> 我是主持人（车长/导游）
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME SCREEN ===== -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <div></div>
+    <div class="title">潮汕奇遇记</div>
+    <div class="pts" id="pts-display">🌟 0</div>
+  </div>
+  <div class="hero">
+    <div class="wave">🏝️</div>
+    <h2 id="greeting-text">准备出发！</h2>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="val" id="stat-rank">-</div>
+      <div class="lbl">个人排名</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="stat-team">-</div>
+      <div class="lbl">团队排名</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="stat-bingo">0</div>
+      <div class="lbl">Bingo连线</div>
+    </div>
+  </div>
+  <div class="module-grid">
+    <div class="module-card" onclick="navTo('quiz')">
+      <div class="icon icon-quiz">⚡</div>
+      <div class="info">
+        <h3>大巴抢答赛</h3>
+        <p>快问快答 · 实时排名 · 团队对战</p>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="module-card" onclick="navTo('missions')">
+      <div class="icon icon-mission">📸</div>
+      <div class="info">
+        <h3>打卡密令</h3>
+        <p>每日拍照任务 · 全员投票 · 赢取积分</p>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="module-card" onclick="navTo('bingo')">
+      <div class="icon icon-bingo">🎯</div>
+      <div class="info">
+        <h3>旅程 Bingo</h3>
+        <p>25个旅程事件 · 随时勾选 · 连线得分</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="badge">离线可玩</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ SCREEN ===== -->
+<div class="screen" id="screen-quiz">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">大巴抢答赛</div>
+    <div class="pts" id="quiz-pts">🌟 0</div>
+  </div>
+  <div id="quiz-content">
+    <div class="quiz-header">
+      <div class="round" id="quiz-round">第一回合：潮汕美食</div>
+      <div class="q-num" id="quiz-num">第 1/5 题</div>
+    </div>
+    <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+    <div class="question-box">
+      <div class="q-text" id="q-text">题目加载中...</div>
+    </div>
+    <div class="answer-grid" id="answer-grid"></div>
+    <div class="quiz-result" id="quiz-result" style="display:none"></div>
+    <button class="btn btn-primary" id="quiz-next" style="display:none;margin-top:16px" onclick="quizNextQuestion()">下一题 →</button>
+  </div>
+</div>
+
+<!-- ===== MISSIONS SCREEN ===== -->
+<div class="screen" id="screen-missions">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">打卡密令</div>
+    <div class="pts" id="mission-pts">🌟 0</div>
+  </div>
+  <div class="day-tabs">
+    <button class="day-tab active" onclick="switchMissionDay(1,this)">📅 Day1 南澳岛</button>
+    <button class="day-tab" onclick="switchMissionDay(2,this)">📅 Day2 汕头</button>
+    <button class="day-tab" onclick="switchMissionDay(3,this)">📅 Day3 返程</button>
+  </div>
+  <input type="file" id="mission-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleMissionPhoto(event)">
+  <div class="mission-list" id="mission-list"></div>
+</div>
+
+<!-- ===== BINGO SCREEN ===== -->
+<div class="screen" id="screen-bingo">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">旅程 Bingo</div>
+    <div class="pts" id="bingo-pts">🌟 0</div>
+  </div>
+  <p style="font-size:13px;color:var(--text-light);text-align:center;margin-bottom:8px">点击格子标记完成，达成连线自动加分！</p>
+  <div class="bingo-grid" id="bingo-grid"></div>
+  <div class="bingo-stats">
+    <div style="font-size:13px;color:var(--text-light)">已达成连线</div>
+    <div class="bingo-count" id="bingo-count">0</div>
+  </div>
+</div>
+
+<!-- ===== LEADERBOARD SCREEN ===== -->
+<div class="screen" id="screen-leaderboard">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">排行榜</div>
+    <div></div>
+  </div>
+  <div class="lb-tabs">
+    <button class="lb-tab active" onclick="switchLBTab('personal',this)">👤 个人榜</button>
+    <button class="lb-tab" onclick="switchLBTab('team',this)">🚌 团队榜</button>
+  </div>
+  <div class="rank-list" id="rank-list"></div>
+</div>
+
+<!-- ===== HOST SCREEN ===== -->
+<div class="screen" id="screen-host">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">主持控制台</div>
+    <div style="font-size:12px;color:var(--coral);font-weight:600">HOST</div>
+  </div>
+  <div id="host-content">
+    <div class="host-panel">
+      <h3>选择抢答回合</h3>
+      <div class="host-round-select" id="host-rounds"></div>
+      <div class="host-q-control" id="host-qctrl" style="display:none">
+        <div class="current-q" id="host-current-q">准备开始...</div>
+        <button class="btn btn-primary" id="host-push-btn" onclick="hostPushQuestion()">📢 推送此题到全员</button>
+        <button class="btn btn-outline" onclick="hostNextQuestion()" style="margin-top:8px;width:100%">跳过 → 下一题</button>
+      </div>
+    </div>
+    <div class="host-panel">
+      <h3>实时战况</h3>
+      <div class="host-status">
+        <div class="stat"><div class="num" id="host-answered">0</div><div class="label">已作答</div></div>
+        <div class="stat"><div class="num" id="host-total">0</div><div class="label">总人数</div></div>
+        <div class="stat"><div class="num" id="host-correct">0</div><div class="label">正确率</div></div>
+      </div>
+      <div style="max-height:300px;overflow-y:auto" id="host-result-detail"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GUIDE SCREEN ===== -->
+<div class="screen" id="screen-guide">
+  <div class="topbar">
+    <button class="back" onclick="navTo('home')">←</button>
+    <div class="title">使用指南</div>
+    <div></div>
+  </div>
+  <div id="guide-content"></div>
+</div>
+
+<!-- BINGO PHOTO UPLOAD MODAL -->
+<div id="bingo-modal" style="display:none">
+  <div class="bingo-modal">
+    <div class="bingo-modal-content">
+      <div class="bingo-task-banner" id="bingo-modal-banner">
+        <span class="bingo-task-icon">🎯</span>
+        <span class="bingo-task-text" id="bingo-task-prompt">请按任务提示拍照证明</span>
+      </div>
+      <div class="preview-box" id="bingo-preview">
+        <div class="preview-placeholder">
+          <span class="placeholder">📷</span>
+          <span class="placeholder-hint" id="bingo-placeholder-hint">按上方任务要求拍照</span>
+        </div>
+      </div>
+      <input type="file" id="bingo-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleBingoPhoto(event)">
+      <div class="btn-row">
+        <button class="cancel-btn" onclick="closeBingoModal()">取消</button>
+        <button class="btn btn-primary" id="bingo-upload-btn" onclick="triggerBingoUpload()">📸 按提示拍照</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="nav-item active" onclick="navTo('home')">
+    <span class="nav-icon">🏠</span>首页
+  </button>
+  <button class="nav-item" onclick="navTo('quiz')">
+    <span class="nav-icon">⚡</span>抢答
+  </button>
+  <button class="nav-item" onclick="navTo('missions')">
+    <span class="nav-icon">📸</span>打卡
+  </button>
+  <button class="nav-item" onclick="navTo('bingo')">
+    <span class="nav-icon">🎯</span>Bingo
+  </button>
+  <button class="nav-item" onclick="navTo('leaderboard')">
+    <span class="nav-icon">🏆</span>排行
+  </button>
+  <button class="nav-item" onclick="navTo('guide')">
+    <span class="nav-icon">📖</span>指南
+  </button>
+  <button class="nav-item host-only" style="display:none" id="nav-host" onclick="navTo('host')">
+    <span class="nav-icon">🎤</span>主持
+  </button>
+</div>
+
+<script>
+// ========== EMBEDDED PLAYER DATA ==========
+// TCL云锋科技园 汕头&南澳岛团建 玩家名单
+// 注册人数: 98人 | 1号车:54人 | 2号车:44人 | 小孩排除:15人
+// 高铁/自驾9人已随机分配至两队
+var EMBEDDED_PLAYERS = [
+  {id:1,name:"伍小龙",bus:"1号车",seat:"R22B",table:"4号桌",team:"1号车"},
+  {id:2,name:"何桂平",bus:"1号车",seat:"R4A",table:"2号桌",team:"1号车"},
+  {id:3,name:"余奕浩",bus:"1号车",seat:"R14A",table:"7号桌",team:"1号车"},
+  {id:4,name:"凌波诗",bus:"1号车",seat:"R1A",table:"2号桌",team:"1号车"},
+  {id:5,name:"刘津",bus:"1号车",seat:"R6A",table:"2号桌",team:"1号车"},
+  {id:6,name:"刘雪梅",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"1号车"},
+  {id:7,name:"吴坤龙",bus:"1号车",seat:"R24B",table:"8号桌",team:"1号车"},
+  {id:8,name:"周佳玲",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"1号车"},
+  {id:9,name:"姚丽芳",bus:"1号车",seat:"R21B",table:"8号桌",team:"1号车"},
+  {id:10,name:"孔冠之",bus:"1号车",seat:"R11B",table:"3号桌",team:"1号车"},
+  {id:11,name:"孔楚琪",bus:"1号车",seat:"R25A",table:"8号桌",team:"1号车"},
+  {id:12,name:"孔研诗",bus:"1号车",seat:"R12B",table:"3号桌",team:"1号车"},
+  {id:13,name:"张丽丽",bus:"1号车",seat:"R20A",table:"3号桌",team:"1号车"},
+  {id:14,name:"张志强",bus:"1号车",seat:"R2B",table:"8号桌",team:"1号车"},
+  {id:15,name:"成茵茵",bus:"1号车",seat:"R8A",table:"7号桌",team:"1号车"},
+  {id:16,name:"戴维瀚",bus:"1号车",seat:"R18A",table:"3号桌",team:"1号车"},
+  {id:17,name:"曾庆滨",bus:"1号车",seat:"R12A",table:"7号桌",team:"1号车"},
+  {id:18,name:"曾德兴",bus:"1号车",seat:"R3B",table:"8号桌",team:"1号车"},
+  {id:19,name:"李嘉乐",bus:"1号车",seat:"R9A",table:"7号桌",team:"1号车"},
+  {id:20,name:"杨志锋",bus:"1号车",seat:"R15A",table:"6号桌",team:"1号车"},
+  {id:21,name:"林哲",bus:"高铁/自驾",seat:"-",table:"2号桌",team:"1号车"},
+  {id:22,name:"林娜",bus:"1号车",seat:"R17B",table:"2号桌",team:"1号车"},
+  {id:23,name:"林小乔",bus:"1号车",seat:"R18B",table:"2号桌",team:"1号车"},
+  {id:24,name:"梁咏钧",bus:"1号车",seat:"R17A",table:"3号桌",team:"1号车"},
+  {id:25,name:"梁家健",bus:"1号车",seat:"R23B",table:"5号桌",team:"1号车"},
+  {id:26,name:"梁文登",bus:"1号车",seat:"R23A",table:"7号桌",team:"1号车"},
+  {id:27,name:"欧阳燕平",bus:"1号车",seat:"R11A",table:"7号桌",team:"1号车"},
+  {id:28,name:"澎派",bus:"高铁/自驾",seat:"-",table:"11号桌",team:"1号车"},
+  {id:29,name:"王磊",bus:"1号车",seat:"R6B",table:"5号桌",team:"1号车"},
+  {id:30,name:"符彬豪",bus:"1号车",seat:"R13B",table:"4号桌",team:"1号车"},
+  {id:31,name:"罗文婷",bus:"1号车",seat:"R24A",table:"8号桌",team:"1号车"},
+  {id:32,name:"肖丹云",bus:"1号车",seat:"R16B",table:"4号桌",team:"1号车"},
+  {id:33,name:"萧文斌",bus:"1号车",seat:"R5A",table:"2号桌",team:"1号车"},
+  {id:34,name:"蓝超奕",bus:"1号车",seat:"R16A",table:"3号桌",team:"1号车"},
+  {id:35,name:"蔡兆盈",bus:"1号车",seat:"R4B",table:"8号桌",team:"1号车"},
+  {id:36,name:"蔡娟",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"1号车"},
+  {id:37,name:"郑秋婷",bus:"1号车",seat:"R22A",table:"7号桌",team:"1号车"},
+  {id:38,name:"郑秋椰",bus:"1号车",seat:"R5B",table:"7号桌",team:"1号车"},
+  {id:39,name:"钟倩文",bus:"1号车",seat:"R10A",table:"7号桌",team:"1号车"},
+  {id:40,name:"阮胜",bus:"1号车",seat:"R20B",table:"8号桌",team:"1号车"},
+  {id:41,name:"陈佳妮",bus:"1号车",seat:"R8B",table:"5号桌",team:"1号车"},
+  {id:42,name:"陈文娟",bus:"1号车",seat:"R19B",table:"8号桌",team:"1号车"},
+  {id:43,name:"陈淑会",bus:"1号车",seat:"R9B",table:"3号桌",team:"1号车"},
+  {id:44,name:"陈芦新",bus:"1号车",seat:"R19A",table:"3号桌",team:"1号车"},
+  {id:45,name:"韦文靖",bus:"1号车",seat:"R2A",table:"2号桌",team:"1号车"},
+  {id:46,name:"马彩娟",bus:"1号车",seat:"R10B",table:"3号桌",team:"1号车"},
+  {id:47,name:"魏丹霞",bus:"1号车",seat:"R7A",table:"2号桌",team:"1号车"},
+  {id:48,name:"黄俊龙",bus:"1号车",seat:"R1B",table:"8号桌",team:"1号车"},
+  {id:49,name:"黄凯东",bus:"1号车",seat:"R7B",table:"5号桌",team:"1号车"},
+  {id:50,name:"黄家悦",bus:"1号车",seat:"R15B",table:"4号桌",team:"1号车"},
+  {id:51,name:"黄戈",bus:"1号车",seat:"R13A",table:"7号桌",team:"1号车"},
+  {id:52,name:"黄绵悦",bus:"1号车",seat:"R21A",table:"3号桌",team:"1号车"},
+  {id:53,name:"黎咏欣",bus:"1号车",seat:"R14B",table:"4号桌",team:"1号车"},
+  {id:54,name:"黎铭成",bus:"1号车",seat:"R3A",table:"2号桌",team:"1号车"},
+  {id:55,name:"何绮琪",bus:"2号车",seat:"R16B",table:"9号桌",team:"2号车"},
+  {id:56,name:"全美琪",bus:"2号车",seat:"R17B",table:"9号桌",team:"2号车"},
+  {id:57,name:"刘盈莉",bus:"2号车",seat:"R13B",table:"10号桌",team:"2号车"},
+  {id:58,name:"刘靖",bus:"2号车",seat:"R19B",table:"9号桌",team:"2号车"},
+  {id:59,name:"向尚",bus:"2号车",seat:"R5A",table:"11号桌",team:"2号车"},
+  {id:60,name:"吴小梅",bus:"2号车",seat:"R6A",table:"11号桌",team:"2号车"},
+  {id:61,name:"周雄华",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"2号车"},
+  {id:62,name:"岑素钿",bus:"2号车",seat:"R19A",table:"9号桌",team:"2号车"},
+  {id:63,name:"廖锦源",bus:"2号车",seat:"R3A",table:"11号桌",team:"2号车"},
+  {id:64,name:"张予期",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"2号车"},
+  {id:65,name:"张伟文",bus:"2号车",seat:"R1A",table:"11号桌",team:"2号车"},
+  {id:66,name:"文科",bus:"2号车",seat:"R2B",table:"6号桌",team:"2号车"},
+  {id:67,name:"曹婉芬",bus:"2号车",seat:"R16A",table:"9号桌",team:"2号车"},
+  {id:68,name:"曾丽华",bus:"2号车",seat:"R1B",table:"6号桌",team:"2号车"},
+  {id:69,name:"李景爱",bus:"2号车",seat:"R10A",table:"6号桌",team:"2号车"},
+  {id:70,name:"李济民",bus:"2号车",seat:"R13A",table:"10号桌",team:"2号车"},
+  {id:71,name:"李秋香",bus:"2号车",seat:"R5B",table:"10号桌",team:"2号车"},
+  {id:72,name:"梁建",bus:"2号车",seat:"R4B",table:"11号桌",team:"2号车"},
+  {id:73,name:"梁志敏",bus:"2号车",seat:"R6B",table:"11号桌",team:"2号车"},
+  {id:74,name:"梁惠勤",bus:"2号车",seat:"R8A",table:"11号桌",team:"2号车"},
+  {id:75,name:"汪素容",bus:"2号车",seat:"R10B",table:"10号桌",team:"2号车"},
+  {id:76,name:"王子红",bus:"2号车",seat:"R12B",table:"4号桌",team:"2号车"},
+  {id:77,name:"肖小智",bus:"2号车",seat:"R11A",table:"10号桌",team:"2号车"},
+  {id:78,name:"肖永根",bus:"2号车",seat:"R15A",table:"5号桌",team:"2号车"},
+  {id:79,name:"蒋晓为",bus:"2号车",seat:"R11B",table:"4号桌",team:"2号车"},
+  {id:80,name:"许汝花",bus:"2号车",seat:"R18A",table:"5号桌",team:"2号车"},
+  {id:81,name:"许绍奋",bus:"2号车",seat:"R9A",table:"10号桌",team:"2号车"},
+  {id:82,name:"谢真",bus:"2号车",seat:"R3B",table:"11号桌",team:"2号车"},
+  {id:83,name:"赵冲",bus:"2号车",seat:"R8B",table:"6号桌",team:"2号车"},
+  {id:84,name:"邓雪银",bus:"2号车",seat:"R7A",table:"6号桌",team:"2号车"},
+  {id:85,name:"邹少宇",bus:"2号车",seat:"R7B",table:"11号桌",team:"2号车"},
+  {id:86,name:"郑一明",bus:"2号车",seat:"R17A",table:"5号桌",team:"2号车"},
+  {id:87,name:"钟水清",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"2号车"},
+  {id:88,name:"陈丽君",bus:"2号车",seat:"R12A",table:"10号桌",team:"2号车"},
+  {id:89,name:"陈伟清",bus:"2号车",seat:"R18B",table:"9号桌",team:"2号车"},
+  {id:90,name:"陈家振",bus:"2号车",seat:"R14B",table:"9号桌",team:"2号车"},
+  {id:91,name:"陈敏",bus:"2号车",seat:"R20A",table:"9号桌",team:"2号车"},
+  {id:92,name:"陈火连",bus:"2号车",seat:"R4A",table:"10号桌",team:"2号车"},
+  {id:93,name:"黄庆杰",bus:"高铁/自驾",seat:"-",table:"1号桌",team:"2号车"},
+  {id:94,name:"黄康彬",bus:"2号车",seat:"R2A",table:"11号桌",team:"2号车"},
+  {id:95,name:"黄敏珊",bus:"2号车",seat:"R20B",table:"9号桌",team:"2号车"},
+  {id:96,name:"黄梦",bus:"2号车",seat:"R9B",table:"10号桌",team:"2号车"},
+  {id:97,name:"黎晓婷",bus:"2号车",seat:"R15B",table:"9号桌",team:"2号车"},
+  {id:98,name:"龚婷婷",bus:"2号车",seat:"R14A",table:"5号桌",team:"2号车"}
+];
+let currentPlayer = null;
+let currentScreen = 'login';
+
+// Quiz state
+let quizRounds = [];
+let currentRoundIdx = 0;
+let currentQIdx = 0;
+let quizScore = 0;
+let quizTimer = null;
+let quizAnswered = false;
+
+// Mission state
+let currentMissionDay = 1;
+
+// Bingo state
+let bingoItems = [];
+let bingoChecked = new Set();
+let bingoLines = new Set();
+
+// Leaderboard tab
+let lbTab = 'personal';
+
+// ========== QUIZ QUESTIONS ==========
+const quizData = [
+  {
+    round: "第一回合：潮汕美食知多少",
+    questions: [
+      {q:"潮汕牛肉火锅最讲究的是什么？", opts:["汤底浓郁","牛肉新鲜现切","蘸料丰富","配菜多样"], ans:1},
+      {q:"汕头最著名的网红牛肉火锅品牌是？", opts:["八合里","吴记","福合埕","海记"], ans:1},
+      {q:"潮汕'工夫茶'的精髓在于？", opts:["茶叶昂贵","茶具讲究","泡茶手法与时间","喝茶环境"], ans:2},
+      {q:"南澳岛最出名的海产品是什么？", opts:["石斑鱼","鲍鱼","紫菜","海胆"], ans:2},
+      {q:"汕头小公园建于哪个年代？", opts:["清代","民国20-30年代","建国初期","改革开放后"], ans:1},
+      {q:"潮汕肠粉和广式肠粉最大的区别是？", opts:["蒸的时间","酱汁和馅料更丰富","粉皮更薄","不卷起来"], ans:1},
+      {q:"'蚝烙'的主要原料是？", opts:["生蚝+鸡蛋+薯粉","生蚝+面粉","生蚝+糯米粉","生蚝+玉米粉"], ans:0},
+      {q:"汕头甘草水果最灵魂的调料是？", opts:["白糖","酸梅粉","辣椒盐","甘草汁"], ans:1},
+    ]
+  },
+  {
+    round: "第二回合：南澳岛&汕头冷知识",
+    questions: [
+      {q:"南澳岛是广东省唯一的什么？", opts:["火山岛","海岛县","珊瑚岛","无人岛"], ans:1},
+      {q:"汕头被誉为'百载商埠'，其开埠时间是？", opts:["1840年","1860年","1900年","1911年"], ans:1},
+      {q:"潮汕话属于汉语的哪个方言？", opts:["粤语","闽南语","客家话","吴语"], ans:1},
+      {q:"南澳岛跨海大桥全长约多少公里？", opts:["约5公里","约9公里","约11公里","约15公里"], ans:2},
+      {q:"'胶己人'在潮汕话中是什么意思？", opts:["好朋友","自己人","老乡","兄弟"], ans:1},
+      {q:"南澳岛上有多少个常住人口？", opts:["约2万","约7万","约15万","约30万"], ans:1},
+      {q:"汕头是中国最早开放的经济特区之一，设立于？", opts:["1978年","1980年","1984年","1988年"], ans:1},
+      {q:"潮汕地区'三市'指的是？", opts:["汕头潮州揭阳","汕头潮州汕尾","汕头揭阳梅州","汕头潮州梅州"], ans:0},
+    ]
+  },
+  {
+    round: "第三回合：趣味挑战题",
+    questions: [
+      {q:"以下哪个不是潮汕著名小吃？", opts:["蚝烙","肠粉","钵仔糕","牛肉丸"], ans:2},
+      {q:"南澳岛有几个主要沙滩？", opts:["1个","2个","3个","4个以上"], ans:2},
+      {q:"汕头'老市区'最具代表性的建筑是？", opts:["百货大楼","小公园亭","邮局大楼","开埠文化馆"], ans:1},
+      {q:"潮汕人喝茶最常用什么茶具？", opts:["紫砂壶","盖碗(冲罐)","玻璃壶","瓷壶"], ans:1},
+      {q:"返程大巴回到广州预计几点？", opts:["15点","16点","17点","18点"], ans:3},
+      {q:"南澳岛灯塔最著名的颜色是？", opts:["纯白","红白相间","蓝白相间","黄黑相间"], ans:1},
+      {q:"汕头'八景'之一的'海湾夕照'指的是？", opts:["南澳湾","礐石海湾","妈屿岛","北山湾"], ans:1},
+      {q:"潮汕人吃牛肉火锅，涮肉的时间通常不超过？", opts:["5秒","8-10秒","15秒","30秒"], ans:1},
+    ]
+  },
+  {
+    round: "第四回合：公司旅行专场",
+    questions: [
+      {q:"本次活动共有多少辆大巴？", opts:["8辆","9辆","10辆","11辆"], ans:3},
+      {q:"Day1 中午吃饭怎么办？", opts:["服务区吃","到南澳岛吃","自备干粮","酒店提供"], ans:2},
+      {q:"Day1 晚上在哪里吃海鲜大餐？", opts:["酒店餐厅","海边大排档","海上鱼屋","码头餐厅"], ans:2},
+      {q:"Day2 中午在哪里吃午餐？", opts:["汕头酒店","南澳岛酒店","吴记牛肉","自选餐厅"], ans:1},
+      {q:"从酒店到吴记牛肉火锅距离多远？", opts:["步行200米","步行300米","坐车1公里","坐车3公里"], ans:1},
+      {q:"Day2 从小公园回酒店多远？", opts:["步行500米","步行1公里","步行2公里","坐车3公里"], ans:2},
+      {q:"Day3 早上最晚几点退房？", opts:["9点","10点","11点","12点"], ans:2},
+      {q:"Day2 的沙滩自由活动在哪个酒店？", opts:["汕头酒店","南澳岛酒店","两家都有","都没有"], ans:1},
+    ]
+  },
+  {
+    round: "第五回合：谁是潮汕通？",
+    questions: [
+      {q:"'潮汕'这个词最早出现在哪个朝代？", opts:["唐代","宋代","明代","清代"], ans:2},
+      {q:"潮汕地区最著名的传统工艺是？", opts:["景德镇陶瓷","潮绣和木雕","苏绣","蜀锦"], ans:1},
+      {q:"南澳岛的'总兵府'建于哪个朝代？", opts:["宋代","元代","明代","清代"], ans:2},
+      {q:"潮汕人说的'食茶'是什么意思？", opts:["吃茶叶","喝茶","泡茶","买茶"], ans:1},
+      {q:"汕头曾经是哪个国家在中国的租界地？", opts:["英国","法国","多个国家","日本"], ans:2},
+      {q:"'南澳I号'是一艘什么船？", opts:["军舰","明代沉船","渔船","游轮"], ans:1},
+      {q:"潮剧发源于哪个朝代？", opts:["唐代","宋元","明代","清代"], ans:1},
+      {q:"汕头海湾隧道全长约多少公里？", opts:["约3公里","约6公里","约10公里","约15公里"], ans:1},
+    ]
+  }
+];
+
+// ========== MISSIONS DATA ==========
+const missionsData = {
+  1: [
+    {id:1,title:"🚌 服务区奇遇",desc:"在服务区买到的最离谱的零食是什么？拍照展示！",pts:20},
+    {id:2,title:"🌊 第一眼大海",desc:"拍下你看到南澳岛大海的第一瞬间",pts:15},
+    {id:3,title:"🦞 海鲜大餐",desc:"在海上鱼屋拍一张最诱人的海鲜照片",pts:25},
+    {id:4,title:"🌅 南澳落日",desc:"捕捉南澳岛的落日美景",pts:30},
+    {id:5,title:"👥 沙滩合影",desc:"和至少3位不同部门的同事在沙滩上创意合影",pts:35},
+  ],
+  2: [
+    {id:6,title:"😴 自然醒证据",desc:"拍下你'睡到自然醒'后的悠闲时刻",pts:15},
+    {id:7,title:"🥩 牛肉火锅",desc:"拍下吴记牛肉火锅开动前和清盘后的对比照",pts:25},
+    {id:8,title:"🏛️ 小公园打卡",desc:"在小公园拍一张最复古、最有民国风的照片",pts:30},
+    {id:9,title:"🚶 2公里漫步",desc:"记录饭后从小公园散步回酒店的沿途风景",pts:20},
+    {id:10,title:"🍜 街头美食",desc:"在路上发现并品尝的汕头街头小吃，拍照记录",pts:20},
+  ],
+  3: [
+    {id:11,title:"🛍️ 干粮储备",desc:"展示你提前准备的返程干粮和小零食",pts:10},
+    {id:12,title:"😪 返程睡相",desc:"(征得同意后)拍下大巴上最可爱的睡相",pts:20},
+    {id:13,title:"🎉 三天回顾",desc:"选出你这三天最满意的一张照片，配一句话总结",pts:25},
+  ]
+};
+
+// ========== BINGO DATA ==========
+const bingoData = [
+  "在服务区买到没见过的零食",
+  "拍到一只海鸟",
+  "和邻座非本部门同事自拍",
+  "吃到会'弹牙'的牛肉丸",
+  "在海边捡到贝壳",
+  "看到一个有趣的潮汕方言词",
+  "大巴上睡着了（被拍到也算）",
+  "在小公园拍到复古建筑",
+  "喝了正宗的潮汕工夫茶",
+  "发现一种没吃过的海鲜",
+  "拍到南澳岛跨海大桥",
+  "和同事一起唱了首歌",
+  "FREE ★ 旅程中心 ★", // center = free
+  "看到海上落日",
+  "吃到潮汕肠粉",
+  "在沙滩上写下自己的名字",
+  "拍下'胶己人'标语或招牌",
+  "学习一句潮汕话并说出来",
+  "拍下酒店房间的创意照",
+  "在服务区和团队一起拉伸",
+  "吃到汕头网红甘草水果",
+  "拍下南澳岛灯塔",
+  "和导游/司机师傅合影",
+  "拍一张'最惨对比照'（出发vs到达）",
+  "在小公园找到3种不同风格的建筑",
+];
+
+// ========== INIT ==========
+async function init() {
+  // Try to load from external file first, fall back to embedded data
+  try {
+    const resp = await fetch('data/players.json');
+    if (resp.ok) { playerData = await resp.json(); }
+    else { playerData = EMBEDDED_PLAYERS; }
+  } catch(e) {
+    playerData = EMBEDDED_PLAYERS;
+  }
+  // Populate bus selector
+  const buses = [...new Set(playerData.map(p=>p.bus))].sort();
+  const sel = document.getElementById('input-bus');
+  buses.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b + '号车';
+    sel.appendChild(opt);
+  });
+
+  // Init bingo
+  bingoItems = [...bingoData];
+  bingoChecked = new Set(JSON.parse(localStorage.getItem('bingo_checked')||'[]'));
+  bingoLines = new Set(JSON.parse(localStorage.getItem('bingo_lines')||'[]'));
+
+  // Check if already logged in
+  const saved = localStorage.getItem('player');
+  if (saved) {
+    currentPlayer = JSON.parse(saved);
+    if (currentPlayer.isHost) {
+      document.getElementById('nav-host').style.display = 'flex';
+    }
+    loadBingoPhotos();
+    showScreen('home');
+    updateHome();
+    updateAllScores();
+  }
+}
+
+// ========== LOGIN ==========
+function doLogin() {
+  const name = document.getElementById('input-name').value.trim();
+  const bus = document.getElementById('input-bus').value;
+  const isHost = document.getElementById('input-host').checked;
+  if (!name) { showToast('请输入你的名字'); return; }
+  if (!bus && !isHost) { showToast('请选择所在大巴'); return; }
+
+  if (isHost) {
+    currentPlayer = { id: Date.now(), name, bus: bus||'HOST', team: bus||'HOST', table:'-', isHost:true };
+  } else {
+    const found = playerData.find(p => p.name === name && p.bus === bus);
+    if (!found) {
+      currentPlayer = { id: Date.now(), name, bus, team: bus, table:'-' };
+    } else {
+      currentPlayer = found;
+    }
+  }
+  localStorage.setItem('player', JSON.stringify(currentPlayer));
+  loadBingoPhotos();
+  if (isHost) {
+    document.getElementById('nav-host').style.display = 'flex';
+  }
+  showScreen('home');
+  updateHome();
+  updateAllScores();
+}
+
+// ========== NAVIGATION ==========
+function navTo(screen) {
+  currentScreen = screen;
+  showScreen('screen-' + screen);
+
+  // Update bottom nav
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navMap = {home:0, quiz:1, missions:2, bingo:3, leaderboard:4, guide:5, host:6};
+  if (navMap[screen] !== undefined) {
+    const items = document.querySelectorAll('.nav-item');
+    if (items[navMap[screen]]) items[navMap[screen]].classList.add('active');
+  }
+
+  // Init screen content
+  if (screen === 'quiz') startQuiz();
+  if (screen === 'missions') renderMissions(currentMissionDay);
+  if (screen === 'bingo') renderBingo();
+  if (screen === 'leaderboard') renderLeaderboard(lbTab);
+  if (screen === 'host') renderHostPanel();
+  if (screen === 'guide') renderGuide();
+
+  updateAllScores();
+  document.getElementById('bottom-nav').style.display = screen === 'login' ? 'none' : 'flex';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// ========== HOME ==========
+function updateHome() {
+  if (!currentPlayer) return;
+  document.getElementById('greeting-text').innerHTML =
+    `你好，<b>${currentPlayer.name}</b>！<br><span style="font-size:14px;color:var(--text-light)">${currentPlayer.bus}号车 · 准备出发</span>`;
+
+  const totalPts = getTotalScore();
+  document.getElementById('pts-display').textContent = '🌟 ' + totalPts;
+
+  // Compute ranks
+  const allScores = getAllPlayerScores();
+  allScores.sort((a,b) => b.total - a.total);
+  const myRank = allScores.findIndex(s => s.name === currentPlayer.name) + 1;
+  document.getElementById('stat-rank').textContent = myRank > 0 ? '#' + myRank : '-';
+
+  // Team rank
+  const teamScores = getTeamScores();
+  const teamRank = teamScores.findIndex(t => t.team === currentPlayer.team) + 1;
+  document.getElementById('stat-team').textContent = teamRank > 0 ? '#' + teamRank : '-';
+
+  document.getElementById('stat-bingo').textContent = bingoLines.size;
+}
+
+function updateAllScores() {
+  if (!currentPlayer) return;
+  const total = getTotalScore();
+  document.getElementById('pts-display').textContent = '🌟 ' + total;
+  document.getElementById('quiz-pts').textContent = '🌟 ' + total;
+  document.getElementById('mission-pts').textContent = '🌟 ' + total;
+  document.getElementById('bingo-pts').textContent = '🌟 ' + total;
+}
+
+function getTotalScore() {
+  if (!currentPlayer) return 0;
+  const quizS = JSON.parse(localStorage.getItem('quiz_score_' + currentPlayer.name) || '0');
+  const missionS = JSON.parse(localStorage.getItem('mission_score_' + currentPlayer.name) || '0');
+  const bingoS = bingoLines.size * 50;
+  return quizS + missionS + bingoS;
+}
+
+function getAllPlayerScores() {
+  return playerData.map(p => {
+    const quizS = JSON.parse(localStorage.getItem('quiz_score_' + p.name) || '0');
+    const missionS = JSON.parse(localStorage.getItem('mission_score_' + p.name) || '0');
+    const bingoS = JSON.parse(localStorage.getItem('bingo_lines_' + p.name) || '[]').length * 50;
+    // Use bingoLines for current player
+    const bS = p.name === (currentPlayer?.name||'') ? bingoLines.size * 50 : bingoS;
+    return { name:p.name, team:p.team, bus:p.bus, total:quizS+missionS+bS, quiz:quizS, mission:missionS, bingo:bS };
+  });
+}
+
+function getTeamScores() {
+  const map = {};
+  playerData.forEach(p => {
+    if (!map[p.team]) map[p.team] = { team:p.team, total:0, count:0 };
+    const scores = getAllPlayerScores();
+    const s = scores.find(x => x.name === p.name);
+    if (s) { map[p.team].total += s.total; map[p.team].count++; }
+  });
+  return Object.values(map).sort((a,b) => b.total - a.total).map(t => ({
+    ...t, total: Math.round(t.total / Math.max(1, t.count))
+  }));
+}
+
+// ========== QUIZ ==========
+function startQuiz() {
+  quizRounds = [...quizData];
+  currentRoundIdx = 0;
+  currentQIdx = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-next').style.display = 'none';
+  startRound();
+}
+
+function startRound() {
+  currentQIdx = 0;
+  quizAnswered = false;
+  // Restore quiz UI structure in case it was replaced
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-header">
+      <div class="round" id="quiz-round">${quizRounds[currentRoundIdx].round}</div>
+      <div class="q-num" id="quiz-num"></div>
+    </div>
+    <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+    <div class="question-box"><div class="q-text" id="q-text"></div></div>
+    <div class="answer-grid" id="answer-grid"></div>
+    <div class="quiz-result" id="quiz-result" style="display:none"></div>
+    <button class="btn btn-primary" id="quiz-next" style="display:none;margin-top:16px" onclick="quizNextQuestion()">下一题 →</button>
+  `;
+  loadQuestion();
+}
+
+function showRoundComplete() {
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-result" style="display:block">
+      <div style="font-size:36px">🏁</div>
+      <p style="font-size:16px;font-weight:600">${quizRounds[currentRoundIdx].round} 结束！</p>
+      <p style="font-size:14px;color:var(--text-light)">当前得分：${quizScore} 分</p>
+      <button class="btn btn-primary" onclick="continueNextRound()" style="margin-top:16px">开始下一回合 →</button>
+    </div>
+  `;
+}
+
+function continueNextRound() {
+  currentRoundIdx++;
+  if (currentRoundIdx >= quizRounds.length) {
+    document.getElementById('quiz-content').innerHTML = `
+      <div class="quiz-result" style="display:block">
+        <div style="font-size:48px">🎉</div>
+        <div class="score">${quizScore}</div>
+        <div class="msg">全部回合完成！</div>
+        <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
+      </div>
+    `;
+    localStorage.setItem('quiz_score_' + currentPlayer.name, JSON.stringify(quizScore));
+    updateAllScores();
+    return;
+  }
+  startRound();
+}
+
+function loadQuestion() {
+  const round = quizRounds[currentRoundIdx];
+  const q = round.questions[currentQIdx];
+  document.getElementById('quiz-num').textContent = `第 ${currentQIdx+1}/${round.questions.length} 题`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-next').style.display = 'none';
+  quizAnswered = false;
+
+  // Build answers
+  const letters = ['A','B','C','D'];
+  const grid = document.getElementById('answer-grid');
+  grid.innerHTML = q.opts.map((o,i) => `
+    <button class="answer-btn" id="ans-${i}" onclick="answerQuiz(${i})">
+      <span class="opt">${letters[i]}</span>${o}
+    </button>
+  `).join('');
+
+  // Timer
+  startTimer();
+}
+
+function startTimer() {
+  const fill = document.getElementById('timer-fill');
+  fill.style.width = '100%';
+  fill.style.background = 'linear-gradient(90deg, var(--ocean-light), var(--coral))';
+  clearInterval(quizTimer);
+  let timeLeft = 10;
+
+  quizTimer = setInterval(() => {
+    timeLeft--;
+    const pct = (timeLeft / 10) * 100;
+    fill.style.width = pct + '%';
+    if (timeLeft <= 3) fill.style.background = 'var(--coral)';
+    if (timeLeft <= 0) {
+      clearInterval(quizTimer);
+      if (!quizAnswered) timeUp();
+    }
+  }, 1000);
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  clearInterval(quizTimer);
+
+  const round = quizRounds[currentRoundIdx];
+  const q = round.questions[currentQIdx];
+  const correct = q.ans;
+  const timeBonus = Math.floor(parseFloat(document.getElementById('timer-fill').style.width) / 10);
+
+  let pts = 0;
+  const correctBtn = document.getElementById('ans-' + correct);
+  correctBtn.classList.add('correct');
+
+  if (idx === correct) {
+    pts = 10 + timeBonus;
+    quizScore += pts;
+    showToast('✅ 正确！+' + pts + '分');
+  } else {
+    document.getElementById('ans-' + idx).classList.add('wrong');
+    showToast('❌ 正确答案是 ' + ['A','B','C','D'][correct]);
+  }
+
+  // Disable all
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+
+  // Show result
+  const resultDiv = document.getElementById('quiz-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = `
+    <div class="score">${quizScore}</div>
+    <div class="msg">当前得分</div>
+  `;
+
+  document.getElementById('quiz-next').style.display = 'block';
+}
+
+function timeUp() {
+  quizAnswered = true;
+  const round = quizRounds[currentRoundIdx];
+  const q = round.questions[currentQIdx];
+  document.getElementById('ans-' + q.ans).classList.add('correct');
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+  document.getElementById('quiz-next').style.display = 'block';
+  showToast('⏰ 时间到！');
+}
+
+function quizNextQuestion() {
+  const round = quizRounds[currentRoundIdx];
+  currentQIdx++;
+  if (currentQIdx >= round.questions.length) {
+    // Round complete
+    currentRoundIdx++;
+    if (currentRoundIdx >= quizRounds.length) {
+      // All rounds complete
+    document.getElementById('quiz-content').innerHTML = `
+      <div class="quiz-result" style="display:block">
+        <div style="font-size:48px">🎉</div>
+        <div class="score">${quizScore}</div>
+        <div class="msg">全部回合完成！</div>
+        <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
+      </div>
+    `;
+    localStorage.setItem('quiz_score_' + currentPlayer.name, JSON.stringify(quizScore));
+    updateAllScores();
+    return;
+    }
+    // Next round
+      showRoundComplete();
+      return;
+  }
+  loadQuestion();
+}
+
+// ========== MISSIONS ==========
+let pendingMissionId = null, pendingMissionPts = 0;
+
+function switchMissionDay(day, btn) {
+  currentMissionDay = day;
+  document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderMissions(day);
+}
+
+function renderMissions(day) {
+  const missions = missionsData[day] || [];
+  const list = document.getElementById('mission-list');
+  const key = 'missions_done_' + (currentPlayer?.name||'');
+  const completed = JSON.parse(localStorage.getItem(key) || '{}');
+  const photosKey = 'mission_photos_' + (currentPlayer?.name||'');
+  const photos = JSON.parse(localStorage.getItem(photosKey) || '{}');
+
+  list.innerHTML = missions.map(m => {
+    const done = completed[m.id];
+    const photo = photos[m.id];
+    return `
+      <div class="mission-card">
+        <div class="m-title">${m.title}</div>
+        <div class="m-desc">${m.desc}</div>
+        <span class="m-points">+${m.pts}分</span>
+        ${done ? `
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px">✅ 已完成 +${done.pts}分</div>
+            ${photo ? `<img class="m-photo" src="${photo}" alt="打卡照片" onclick="viewFullPhoto('${photo}')">` : `<div style="background:#F5F5F5;padding:12px;border-radius:10px;text-align:center;color:var(--text-light);font-size:13px">暂无照片</div>`}
+          </div>
+        ` : `
+          <div class="upload-area" onclick="startMissionPhoto(${m.id},${m.pts})">
+            📷 拍照打卡
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+function startMissionPhoto(id, pts) {
+  pendingMissionId = id;
+  pendingMissionPts = pts;
+  document.getElementById('mission-file-input').click();
+}
+
+function handleMissionPhoto(e) {
+  const file = e.target.files[0];
+  if (!file || pendingMissionId === null) { e.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const dataUrl = ev.target.result;
+    // Compress large images (>200KB) by drawing to canvas
+    if (dataUrl.length > 300000) {
+      const img = new Image();
+      img.onload = function() {
+        const c = document.createElement('canvas');
+        const maxW = 800;
+        c.width = Math.min(img.width, maxW);
+        c.height = (img.height / img.width) * c.width;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        const compressed = c.toDataURL('image/jpeg', 0.7);
+        saveMissionPhoto(compressed);
+      };
+      img.src = dataUrl;
+    } else {
+      saveMissionPhoto(dataUrl);
+    }
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function saveMissionPhoto(dataUrl) {
+  const id = pendingMissionId;
+  const pts = pendingMissionPts;
+  const name = currentPlayer?.name||'';
+
+  // Save photo
+  const photosKey = 'mission_photos_' + name;
+  const photos = JSON.parse(localStorage.getItem(photosKey) || '{}');
+  photos[id] = dataUrl;
+  localStorage.setItem(photosKey, JSON.stringify(photos));
+
+  // Mark as completed
+  const completedKey = 'missions_done_' + name;
+  const completed = JSON.parse(localStorage.getItem(completedKey) || '{}');
+  completed[id] = { time: Date.now(), pts };
+  localStorage.setItem(completedKey, JSON.stringify(completed));
+
+  // Update score
+  let missionScore = JSON.parse(localStorage.getItem('mission_score_' + name) || '0');
+  missionScore += pts;
+  localStorage.setItem('mission_score_' + name, JSON.stringify(missionScore));
+
+  pendingMissionId = null;
+  pendingMissionPts = 0;
+
+  showToast('✅ 打卡成功！+' + pts + '分');
+  renderMissions(currentMissionDay);
+  updateAllScores();
+  updateHome();
+}
+
+function viewFullPhoto(dataUrl) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.onclick = function() { overlay.remove(); };
+  overlay.innerHTML = '<img src="'+dataUrl+'" style="max-width:95%;max-height:95%;border-radius:12px;object-fit:contain">';
+  document.body.appendChild(overlay);
+}
+
+// ========== BINGO ==========
+// Key for storing bingo photos per player
+function bingoPhotoKey() { return 'bingo_photos_' + (currentPlayer?.name||'anonymous'); }
+let bingoPhotos = {};
+let bingoModalIdx = -1;
+
+function loadBingoPhotos() {
+  try { bingoPhotos = JSON.parse(localStorage.getItem(bingoPhotoKey())||'{}'); }
+  catch(e) { bingoPhotos = {}; }
+}
+
+function saveBingoPhotos() {
+  localStorage.setItem(bingoPhotoKey(), JSON.stringify(bingoPhotos));
+}
+
+function renderBingo() {
+  loadBingoPhotos();
+  const grid = document.getElementById('bingo-grid');
+  grid.innerHTML = bingoItems.map((item, i) => {
+    const isFree = i === 12;
+    const checked = bingoChecked.has(i);
+    const isLine = bingoLines.has(i);
+    const hasPhoto = !!bingoPhotos[i];
+    let cls = 'bingo-cell';
+    if (isFree) cls += ' free';
+    if (isLine) cls += ' bingo-line';
+    else if (checked) cls += ' checked';
+    if (hasPhoto && (checked||isLine)) cls += ' has-photo';
+    return `<div class="${cls}" onclick="openBingoModal(${i})">${item}</div>`;
+  }).join('');
+  document.getElementById('bingo-count').textContent = bingoLines.size;
+}
+
+function openBingoModal(idx) {
+  if (idx === 12) return;
+  if (bingoLines.has(idx)) { showToast('Bingo连线已锁定，无法修改'); return; }
+  bingoModalIdx = idx;
+  const taskText = bingoItems[idx];
+  document.getElementById('bingo-task-prompt').innerHTML = taskText + '<br><span class="bingo-task-hint">请对着这个场景拍照证明</span>';
+  if (bingoChecked.has(idx)) {
+    document.getElementById('bingo-upload-btn').textContent = '❌ 取消完成';
+    document.getElementById('bingo-upload-btn').className = 'btn btn-coral';
+    document.getElementById('bingo-upload-btn').onclick = uncheckBingoCell;
+  } else {
+    document.getElementById('bingo-upload-btn').textContent = '📸 按提示拍照';
+    document.getElementById('bingo-upload-btn').className = 'btn btn-primary';
+    document.getElementById('bingo-upload-btn').onclick = triggerBingoUpload;
+  }
+  // Show existing photo if any
+  const preview = document.getElementById('bingo-preview');
+  if (bingoPhotos[idx]) {
+    preview.innerHTML = `<img src="${bingoPhotos[idx]}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
+  } else {
+    preview.innerHTML = `<div class="preview-placeholder"><span class="placeholder">📷</span><span class="placeholder-hint">按上方任务要求拍照</span></div>`;
+  }
+  document.getElementById('bingo-modal').style.display = 'block';
+}
+
+function closeBingoModal() {
+  document.getElementById('bingo-modal').style.display = 'none';
+  bingoModalIdx = -1;
+}
+
+function triggerBingoUpload() {
+  document.getElementById('bingo-file-input').click();
+}
+
+function handleBingoPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Compress and convert to base64
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const maxW = 400;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+      // Store photo
+      bingoPhotos[bingoModalIdx] = dataUrl;
+      saveBingoPhotos();
+
+      // Mark as checked
+      bingoChecked.add(bingoModalIdx);
+      saveBingoState();
+      checkBingoLines();
+      renderBingo();
+      updateAllScores();
+      updateHome();
+
+      // Show preview with task text
+      document.getElementById('bingo-preview').innerHTML = `<img src="${dataUrl}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
+      showToast('✅ 完成！' + bingoItems[bingoModalIdx].substring(0,12) + '...');
+      setTimeout(closeBingoModal, 1000);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function uncheckBingoCell() {
+  if (bingoModalIdx < 0) return;
+  bingoChecked.delete(bingoModalIdx);
+  delete bingoPhotos[bingoModalIdx];
+  saveBingoState();
+  saveBingoPhotos();
+  renderBingo();
+  updateAllScores();
+  updateHome();
+  showToast('已取消完成状态');
+  closeBingoModal();
+}
+
+function checkBingoLines() {
+  const N = 5;
+  let newLines = new Set();
+
+  // Check rows
+  for (let r = 0; r < N; r++) {
+    let complete = true;
+    let cells = [];
+    for (let c = 0; c < N; c++) {
+      const idx = r * N + c;
+      cells.push(idx);
+      if (idx !== 12 && !bingoChecked.has(idx)) complete = false;
+    }
+    if (complete) cells.forEach(i => newLines.add(i));
+  }
+
+  // Check cols
+  for (let c = 0; c < N; c++) {
+    let complete = true;
+    let cells = [];
+    for (let r = 0; r < N; r++) {
+      const idx = r * N + c;
+      cells.push(idx);
+      if (idx !== 12 && !bingoChecked.has(idx)) complete = false;
+    }
+    if (complete) cells.forEach(i => newLines.add(i));
+  }
+
+  // Diag 1
+  let complete = true;
+  let cells = [];
+  for (let i = 0; i < N; i++) {
+    const idx = i * N + i;
+    cells.push(idx);
+    if (idx !== 12 && !bingoChecked.has(idx)) complete = false;
+  }
+  if (complete) cells.forEach(i => newLines.add(i));
+
+  // Diag 2
+  complete = true;
+  cells = [];
+  for (let i = 0; i < N; i++) {
+    const idx = i * N + (N - 1 - i);
+    cells.push(idx);
+    if (idx !== 12 && !bingoChecked.has(idx)) complete = false;
+  }
+  if (complete) cells.forEach(i => newLines.add(i));
+
+  if (newLines.size > bingoLines.size) {
+    const added = newLines.size - bingoLines.size;
+    showToast('🎉 BINGO! 达成 ' + (bingoLines.size > 0 ? '新' : '') + '连线！');
+  }
+  bingoLines = newLines;
+  saveBingoState();
+}
+
+function saveBingoState() {
+  localStorage.setItem('bingo_checked', JSON.stringify([...bingoChecked]));
+  localStorage.setItem('bingo_lines', JSON.stringify([...bingoLines]));
+}
+
+// ========== LEADERBOARD ==========
+function switchLBTab(tab, btn) {
+  lbTab = tab;
+  document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeaderboard(tab);
+}
+
+function renderLeaderboard(tab) {
+  const list = document.getElementById('rank-list');
+  if (tab === 'personal') {
+    const scores = getAllPlayerScores();
+    scores.sort((a,b) => b.total - a.total);
+    list.innerHTML = scores.map((s, i) => {
+      let cls = 'normal';
+      if (i===0) cls='gold';
+      else if (i===1) cls='silver';
+      else if (i===2) cls='bronze';
+      const isMe = currentPlayer && s.name === currentPlayer.name;
+      return `
+        <div class="rank-item ${isMe?'me':''}">
+          <div class="rank-num ${cls}">${i+1}</div>
+          <div class="rank-info">
+            <div class="rank-name">${s.name}</div>
+            <div class="rank-team">${s.bus}号车</div>
+          </div>
+          <div class="rank-pts">${s.total}</div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    const teams = getTeamScores();
+    list.innerHTML = teams.map((t, i) => {
+      let cls = 'normal';
+      if (i===0) cls='gold';
+      else if (i===1) cls='silver';
+      else if (i===2) cls='bronze';
+      const isMe = currentPlayer && t.team === currentPlayer.team;
+      return `
+        <div class="rank-item ${isMe?'me':''}">
+          <div class="rank-num ${cls}">${i+1}</div>
+          <div class="rank-info">
+            <div class="rank-name">${t.team}号车</div>
+            <div class="rank-team">人均 ${t.total} 分</div>
+          </div>
+          <div class="rank-pts">${t.total}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+// ========== UTILS ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ========== HOST PANEL ==========
+let hostActiveRound = -1;
+let hostActiveQ = 0;
+let hostSimAnswers = {};
+
+function renderHostPanel() {
+  if (!currentPlayer || !currentPlayer.isHost) {
+    document.getElementById('host-content').innerHTML = `
+      <div class="host-login-hint">
+        <div class="big">🎤</div>
+        <p>请以主持人身份重新登录</p>
+        <button class="btn btn-primary" onclick="navTo('login')" style="margin-top:16px">去登录</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Render round buttons
+  const roundsDiv = document.getElementById('host-rounds');
+  roundsDiv.innerHTML = quizData.map((r,i) => {
+    const active = hostActiveRound === i ? ' active' : '';
+    return `<button class="${active}" onclick="hostSelectRound(${i})">${r.round}</button>`;
+  }).join('');
+
+  // Render current question control
+  if (hostActiveRound >= 0) {
+    document.getElementById('host-qctrl').style.display = 'block';
+    const round = quizData[hostActiveRound];
+    if (hostActiveQ < round.questions.length) {
+      const q = round.questions[hostActiveQ];
+      document.getElementById('host-current-q').innerHTML = `
+        <strong>第${hostActiveQ+1}/${round.questions.length}题</strong><br>
+        ${q.q}<br>
+        <span style="font-size:12px;color:var(--text-light)">
+          ${q.opts.map((o,i) => ['A','B','C','D'][i]+'. '+o).join(' &nbsp;|&nbsp; ')}
+        </span><br>
+        <span style="font-size:11px;color:#4CAF50">✓ 答案：${['A','B','C','D'][q.ans]}</span>
+      `;
+      document.getElementById('host-push-btn').textContent = '📢 推送此题到全员';
+      document.getElementById('host-push-btn').onclick = hostPushQuestion;
+    } else {
+      document.getElementById('host-current-q').innerHTML = '<strong>本回合已结束！</strong>';
+      document.getElementById('host-push-btn').textContent = '🔄 开始下一回合';
+      document.getElementById('host-push-btn').onclick = hostNextRound;
+    }
+  } else {
+    document.getElementById('host-qctrl').style.display = 'none';
+  }
+
+  // Update stats
+  updateHostStats();
+}
+
+function hostSelectRound(idx) {
+  hostActiveRound = idx;
+  hostActiveQ = 0;
+  hostSimAnswers = {};
+  // Broadcast to players via localStorage
+  localStorage.setItem('host_active_round', JSON.stringify({round:idx, question:-1, action:'round_select'}));
+  renderHostPanel();
+  showToast('已选择：' + quizData[idx].round);
+}
+
+function hostPushQuestion() {
+  if (hostActiveRound < 0) return;
+  const round = quizData[hostActiveRound];
+  if (hostActiveQ >= round.questions.length) return;
+  hostSimAnswers = {};
+
+  // Broadcast current question to all players
+  localStorage.setItem('host_active_question', JSON.stringify({
+    round: hostActiveRound,
+    question: hostActiveQ,
+    timestamp: Date.now()
+  }));
+  localStorage.setItem('host_player_answers_' + hostActiveRound + '_' + hostActiveQ, JSON.stringify({}));
+
+  showToast('📢 题目已推送！');
+  hostActiveQ++;
+  renderHostPanel();
+}
+
+function hostNextQuestion() {
+  if (hostActiveRound < 0) return;
+  hostActiveQ++;
+  renderHostPanel();
+}
+
+function hostNextRound() {
+  hostActiveRound++;
+  hostActiveQ = 0;
+  hostSimAnswers = {};
+  if (hostActiveRound >= quizData.length) hostActiveRound = 0;
+  localStorage.setItem('host_active_round', JSON.stringify({round:hostActiveRound, question:-1, action:'round_select'}));
+  renderHostPanel();
+}
+
+function updateHostStats() {
+  // Simulate player answers (in real deployment, read from WebSocket)
+  const totalPlayers = playerData.length || 16;
+  const answered = Math.floor(Math.random() * totalPlayers * 0.8);
+  const correct = Math.floor(answered * (0.5 + Math.random() * 0.3));
+  document.getElementById('host-answered').textContent = answered;
+  document.getElementById('host-total').textContent = totalPlayers;
+  document.getElementById('host-correct').textContent = Math.round((correct/Math.max(1,answered))*100) + '%';
+}
+
+// Listen for host broadcast (simulated multi-device sync)
+window.addEventListener('storage', function(e) {
+  if (e.key === 'host_active_question') {
+    try {
+      const data = JSON.parse(e.newValue);
+      handleHostQuestion(data.round, data.question);
+    } catch(ex) {}
+  }
+});
+
+function handleHostQuestion(roundIdx, qIdx) {
+  if (currentPlayer && currentPlayer.isHost) return; // host doesn't answer
+  if (roundIdx < 0 || roundIdx >= quizData.length) return;
+  const round = quizData[roundIdx];
+  if (qIdx < 0 || qIdx >= round.questions.length) return;
+
+  // Auto-navigate to quiz screen
+  quizRounds = [round];
+  currentRoundIdx = 0;
+  currentQIdx = qIdx;
+  quizScore = JSON.parse(localStorage.getItem('quiz_score_' + (currentPlayer?.name||'anonymous')) || '0');
+  quizAnswered = false;
+  navTo('quiz');
+
+  // Override load to use specific question
+  setTimeout(() => loadQuestion(), 100);
+}
+
+// ========== GUIDE SCREEN ==========
+function renderGuide() {
+  document.getElementById('guide-content').innerHTML = `
+    <div class="guide-section">
+      <h3>🎯 游戏总览</h3>
+      <div class="guide-tip">潮汕奇遇记包含3个互动游戏，全程陪伴你3天2夜的汕头南澳岛之旅。用手机打开页面即可参与，无需安装任何App。</div>
+    </div>
+
+    <div class="guide-section">
+      <h3>⚡ 大巴抢答赛</h3>
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>车长选回合</b>：每辆大巴的车长/导游作为主持人，选择题目回合</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>主持推送题目</b>：主持人逐题推送，大屏幕或口播展示题目</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>全员抢答</b>：10秒倒计时，在手机上点击A/B/C/D作答</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">4</div>
+        <div class="step-text"><b>加分规则</b>：答对得10分，答得越快额外加分越多</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3>📸 打卡密令</h3>
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>每日任务</b>：Day1/Day2/Day3各有专属拍照任务</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>拍照上传</b>：点击任务卡片，用手机拍照完成打卡</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>获取积分</b>：每个任务有对应分值，完成后自动加分</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3>🎯 旅程Bingo</h3>
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>5x5卡片</b>：25个旅程中的趣味事件，中间格自动完成</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>拍照证明</b>：点击格子后必须拍照上传才能标记完成</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>连线得分</b>：完成任意一行、一列或对角线，自动获得50分</div>
+      </div>
+      <div class="guide-tip">💡 Bingo数据保存在手机本地，离线也能玩。在服务区、沙滩、小公园随时掏出手机勾选。</div>
+
+      <div class="guide-section" style="margin-top:20px">
+        <h3>🔧 兼容性检测</h3>
+        <div class="guide-step">
+          <div class="step-num">!</div>
+          <div class="step-text"><b>首次打开建议检测</b>：访问 <a href="compat-check.html" style="color:var(--ocean)">compat-check.html</a> 测试你的手机环境。支持：iOS 12+/Android 7+/微信内置浏览器/Chrome/Safari/主流国产浏览器</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3>🏆 积分与排行</h3>
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>三模块积分</b>：抢答赛 + 打卡密令 + Bingo连线 = 总分</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>个人排行榜</b>：看看谁是最强玩家</div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>团队排行榜</b>：按大巴分队，人均积分排名</div>
+      </div>
+      <div class="guide-tip">💡 Day3返程大巴上公布最终排名，可以配合实物奖品颁奖！</div>
+    </div>
+  `;
+}
+
+// ========== WEBSOCKET CLIENT ==========
+let wsClient = null;
+function connectWebSocket() {
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = protocol + '//' + location.host;
+  try {
+    wsClient = new WebSocket(wsUrl);
+    wsClient.onopen = () => {
+      console.log('[WS] 已连接');
+      if (currentPlayer) {
+        wsClient.send(JSON.stringify({
+          type: 'register',
+          name: currentPlayer.name,
+          bus: currentPlayer.bus,
+          isHost: currentPlayer.isHost || false
+        }));
+      }
+    };
+    wsClient.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'question' && !currentPlayer?.isHost) {
+          handleHostQuestion(msg.round, msg.question);
+        } else if (msg.type === 'round_selected' && currentPlayer?.isHost) {
+          hostActiveRound = msg.round;
+          hostActiveQ = 0;
+          showToast('已切换到：' + (quizData[msg.round]?.round||''));
+        } else if (msg.type === 'answers_update' && currentPlayer?.isHost) {
+          document.getElementById('host-answered').textContent = msg.answered;
+          document.getElementById('host-total').textContent = msg.total;
+          document.getElementById('host-correct').textContent =
+            Math.round((Object.values(msg.answers).filter(a=>a.correct).length/Math.max(1,msg.answered))*100) + '%';
+        }
+      } catch(ex) {}
+    };
+    wsClient.onclose = () => {
+      console.log('[WS] 断开，5秒后重连...');
+      setTimeout(connectWebSocket, 5000);
+    };
+  } catch(e) {
+    console.log('[WS] 离线模式 (无服务器)');
+  }
+}
+
+// ========== COMPATIBILITY CHECK ==========
+function checkCompatibility() {
+  const issues = [];
+
+  // Check storage
+  try { localStorage.setItem('_c','1'); localStorage.removeItem('_c'); }
+  catch(e) { issues.push('本地存储不可用，数据无法保存'); }
+
+  // Check CSS Grid (needed for Bingo)
+  if (!CSS.supports || !CSS.supports('display','grid')) {
+    issues.push('浏览器不支持CSS Grid，Bingo模块显示可能异常');
+  }
+
+  // Check FileReader (needed for Bingo photo)
+  if (typeof FileReader === 'undefined') {
+    issues.push('FileReader不可用，Bingo拍照功能受限');
+  }
+
+  // Check Fetch
+  if (typeof fetch !== 'function') {
+    issues.push('网络请求不可用，玩家名单加载可能失败');
+  }
+
+  // Check Canvas for photo compression
+  try { const c=document.createElement('canvas'); const ctx=c.getContext('2d');
+    if(!ctx) issues.push('Canvas不可用，照片压缩功能受限'); }
+  catch(e) { issues.push('Canvas不可用'); }
+
+  // WeChat browser specific
+  if (/MicroMessenger/i.test(navigator.userAgent)) {
+    // WeChat WebView - most features work, just note
+    console.log('[Compat] WeChat browser detected');
+  }
+
+  // Old Android check
+  const ua = navigator.userAgent;
+  const androidMatch = ua.match(/Android\s+([\d.]+)/);
+  if (androidMatch && parseFloat(androidMatch[1]) < 7) {
+    issues.push('Android版本过低（<7.0），部分功能可能异常');
+  }
+  const iosMatch = ua.match(/OS\s+(\d+)/);
+  if (iosMatch && parseInt(iosMatch[1]) < 12) {
+    issues.push('iOS版本过低（<12），部分动画效果不佳');
+  }
+
+  if (issues.length > 0) {
+    const warn = document.getElementById('compat-warn');
+    warn.classList.remove('hidden');
+    document.getElementById('compat-msg').textContent =
+      '兼容性提示：' + issues.join('；') + '。建议升级浏览器或在微信中打开。';
+  }
+}
+
+// ========== STARTUP ==========
+checkCompatibility();
+init();
+connectWebSocket();
+</script>
+
+</body>
+</html>
