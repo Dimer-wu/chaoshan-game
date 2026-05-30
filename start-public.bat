@@ -1,95 +1,63 @@
 @echo off
-chcp 65001 >nul
+title 潮汕奇遇记 - 公网版
+echo ========================================
+echo   潮汕奇遇记  公网版
+echo   汕头 ^& 南澳岛 3天2夜之旅
+echo ========================================
+echo.
+
 cd /d "%~dp0"
-title 潮汕奇遇记 - 公网隧道
 
-echo.
-echo ========================================
-echo       潮汕奇遇记
-echo       汕头 ^& 南澳岛 3天2夜之旅
-echo       公网版
-echo ========================================
-echo.
-
-:: 1. Check if HTTP server is running
-echo [*] 检查 HTTP 服务...
-powershell -Command "try{$r=Invoke-WebRequest -Uri http://localhost:8080 -TimeoutSec 3 -UseBasicParsing;exit 0}catch{exit 1}" >nul 2>&1
-if errorlevel 1 (
-    echo [!] HTTP 服务未启动，正在启动...
-    start "潮汕HTTP" /min python server\server.py
-    timeout /t 3 >nul
-    echo [OK] HTTP 服务已启动
-) else (
-    echo [OK] HTTP 服务已运行
+:: Check Python
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [X] 未找到 Python！请先安装 Python
+    pause
+    exit /b
 )
+echo [OK] Python 就绪
 
-:: 2. Check qrcode package
-echo [*] 检查 qrcode 包...
-python -c "import qrcode" 2>nul
-if errorlevel 1 (
-    echo [!] qrcode 包未安装，正在安装...
+:: Check qrcode
+python -c "import qrcode" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [!] 正在安装 qrcode...
     pip install qrcode Pillow -q
-    if errorlevel 1 (
-        echo [X] 安装失败，请手动执行: pip install qrcode Pillow
+    if %errorlevel% neq 0 (
+        echo [X] qrcode 安装失败！请手动执行: pip install qrcode Pillow
         pause
-        exit /b 1
+        exit /b
     )
 )
-echo [OK] qrcode 已就绪
+echo [OK] qrcode 就绪
 
-:: 3. Start tunnel
+:: Start HTTP server
+echo [*] 启动 HTTP 服务...
+start "潮汕HTTP" /min cmd /c "cd /d \"%~dp0\" && python server\server.py"
+timeout /t 3 >nul
+
+:: Verify
+powershell -Command "try{$r=Invoke-WebRequest -Uri http://localhost:8080 -TimeoutSec 3 -UseBasicParsing;exit 0}catch{exit 1}" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [X] HTTP 服务启动失败！
+    echo    请先手动运行 python server\server.py 检查错误
+    pause
+    exit /b
+)
+echo [OK] HTTP 服务运行中 :8080
+
+:: Tunnel
 echo.
-echo [*] 启动公网隧道 (localhost.run)...
-echo ================================================
-echo.
-echo   隧道启动后会自动生成二维码: qrcode-public.png
-echo   手机微信扫码即可进入游戏
-echo.
-echo   注意: 隧道断开后会自动重连
-echo         但URL会变化，需重新分发二维码
-echo.
-echo   按 Ctrl+C 可停止服务
-echo ================================================
+echo ========================================
+echo   启动公网隧道，连通后自动生成 QR 码
+echo   按 Ctrl+C 停止
+echo ========================================
 echo.
 
 :loop
-echo [%time%] 正在建立隧道连接...
-
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:localhost:8080 nokey@localhost.run 2>&1 | python -c "
-import sys, re, os, datetime
-# CWD inherited from batch's cd /d
-url = None
-for line in sys.stdin:
-    sys.stdout.write(line)
-    sys.stdout.flush()
-    if not url:
-        m = re.search(r'https://([a-z0-9]+\.lhr\.life)', line)
-        if m:
-            url = m.group(0)
-            try:
-                import qrcode
-                img = qrcode.make(url)
-                img.save('qrcode-public.png')
-                print('')
-                print('=' * 48)
-                print('  公网地址: ' + url)
-                print('  生成时间: ' + datetime.datetime.now().strftime('%%H:%%M:%%S'))
-                print('  QR码已保存: qrcode-public.png')
-                print('  请将 qrcode-public.png 发到微信群')
-                print('  手机微信扫码即可进入游戏!')
-                print('=' * 48)
-                print('')
-            except ImportError:
-                print('[!] qrcode 包未安装，无法生成二维码')
-                print('    公网地址: ' + url)
-"
+echo [%time%] 建立隧道连接...
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:localhost:8080 nokey@localhost.run 2>&1 | python server\tunnel_qr.py
 
 echo.
-echo [!] 隧道连接断开 (%time%)
-echo ================================================
-echo   5秒后自动重连...
-echo   注意: 新URL会不同，需重新生成和分发二维码
-echo   如需停止, 请按 Ctrl+C 然后关闭窗口
-echo ================================================
+echo [!] 隧道断开 (%time%)，5秒后重连...
 timeout /t 5 >nul
 goto loop
