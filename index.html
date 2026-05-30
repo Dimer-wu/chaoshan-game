@@ -164,6 +164,7 @@ body {
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.75} }
 
+.question-box {
   background:var(--white); border-radius:var(--radius); padding:24px 20px;
   box-shadow:var(--shadow); text-align:center; margin-bottom:16px;
 }
@@ -796,6 +797,7 @@ var EMBEDDED_PLAYERS = [
 ];
 let currentPlayer = null;
 let currentScreen = 'login';
+let playerData = EMBEDDED_PLAYERS;
 
 // ========== EVENT TIME GATE ==========
 const EVENT_START = new Date('2026-06-12T08:00:00+08:00');
@@ -1107,7 +1109,6 @@ function getAllPlayerScores() {
   return playerData.map(p => {
     const quizS = JSON.parse(localStorage.getItem(getScoreKey('quiz_score_' + p.name)) || '0');
     const missionS = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + p.name)) || '0');
-    const missionS = JSON.parse(localStorage.getItem(getScoreKey('mission_score_' + p.name)) || '0');
     const bingoS = JSON.parse(localStorage.getItem(getScoreKey('bingo_lines_' + p.name)) || '[]').length * 50;
     // Use bingoLines for current player
     const bS = p.name === (currentPlayer?.name||'') ? bingoLines.size * 50 : bingoS;
@@ -1279,25 +1280,24 @@ function quizNextQuestion() {
   const round = quizRounds[currentRoundIdx];
   currentQIdx++;
   if (currentQIdx >= round.questions.length) {
-    // Round complete
-    currentRoundIdx++;
-    if (currentRoundIdx >= quizRounds.length) {
+    // Round complete — check if next round exists (without incrementing yet)
+    if (currentRoundIdx + 1 >= quizRounds.length) {
       // All rounds complete
-    document.getElementById('quiz-content').innerHTML = `
-      <div class="quiz-result" style="display:block">
-        <div style="font-size:48px">🎉</div>
-        <div class="score">${quizScore}</div>
-        <div class="msg">全部回合完成！</div>
-        <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
-      </div>
-    `;
-    localStorage.setItem(getScoreKey('quiz_score_' + currentPlayer.name), JSON.stringify(quizScore));
-    updateAllScores();
-    return;
-    }
-    // Next round
-      showRoundComplete();
+      document.getElementById('quiz-content').innerHTML = `
+        <div class="quiz-result" style="display:block">
+          <div style="font-size:48px">🎉</div>
+          <div class="score">${quizScore}</div>
+          <div class="msg">全部回合完成！</div>
+          <button class="btn btn-primary" onclick="navTo('home')" style="margin-top:16px">返回首页</button>
+        </div>
+      `;
+      localStorage.setItem(getScoreKey('quiz_score_' + currentPlayer.name), JSON.stringify(quizScore));
+      updateAllScores();
       return;
+    }
+    // Next round — defer increment to continueNextRound()
+    showRoundComplete();
+    return;
   }
   loadQuestion();
 }
@@ -1789,16 +1789,14 @@ function handleHostQuestion(roundIdx, qIdx) {
   const round = quizData[roundIdx];
   if (qIdx < 0 || qIdx >= round.questions.length) return;
 
-  // Auto-navigate to quiz screen
+  // Auto-navigate to quiz screen (navTo → startQuiz resets state, so override after)
+  navTo('quiz');
   quizRounds = [round];
   currentRoundIdx = 0;
   currentQIdx = qIdx;
   quizScore = JSON.parse(localStorage.getItem(getScoreKey('quiz_score_' + (currentPlayer?.name||'anonymous'))) || '0');
   quizAnswered = false;
-  navTo('quiz');
-
-  // Override load to use specific question
-  setTimeout(() => loadQuestion(), 100);
+  loadQuestion();
 }
 
 // ========== GUIDE SCREEN ==========
