@@ -57,7 +57,7 @@ echo [%time%] 正在建立隧道连接...
 
 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:localhost:8080 nokey@localhost.run 2>&1 | python -c "
 import sys, re, os, datetime
-os.chdir(r'%~dp0')
+# CWD inherited from batch's cd /d
 url = None
 for line in sys.stdin:
     sys.stdout.write(line)
