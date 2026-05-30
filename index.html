@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>潮汕奇遇记 - 汕头&南澳岛之旅</title>
 <style>
 :root {
@@ -1011,6 +1014,12 @@ function doLogin() {
   if (isHost) {
     document.getElementById('nav-host').style.display = 'flex';
   }
+  // Register to WebSocket server
+  if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+    sendWS({type:'register', name:currentPlayer.name, bus:currentPlayer.bus, isHost:currentPlayer.isHost||false});
+  } else {
+    connectWebSocket();
+  }
   showScreen('home');
   updateHome();
   updateAllScores();
@@ -1255,6 +1264,9 @@ function answerQuiz(idx) {
   // Disable all
   document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
 
+  // Report answer to host via WebSocket
+  sendWS({type:'player_answer', answer:idx, correct:idx===correct});
+
   // Show result
   const resultDiv = document.getElementById('quiz-result');
   resultDiv.style.display = 'block';
@@ -1273,6 +1285,7 @@ function timeUp() {
   document.getElementById('ans-' + q.ans).classList.add('correct');
   document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
   document.getElementById('quiz-next').style.display = 'block';
+  sendWS({type:'player_answer', answer:-1, correct:false});
   showToast('⏰ 时间到！');
 }
 
@@ -1723,8 +1736,7 @@ function hostSelectRound(idx) {
   hostActiveRound = idx;
   hostActiveQ = 0;
   hostSimAnswers = {};
-  // Broadcast to players via localStorage
-  localStorage.setItem('host_active_round', JSON.stringify({round:idx, question:-1, action:'round_select'}));
+  sendWS({type:'host_select_round', round:idx});
   renderHostPanel();
   showToast('已选择：' + quizData[idx].round);
 }
@@ -1735,13 +1747,7 @@ function hostPushQuestion() {
   if (hostActiveQ >= round.questions.length) return;
   hostSimAnswers = {};
 
-  // Broadcast current question to all players
-  localStorage.setItem('host_active_question', JSON.stringify({
-    round: hostActiveRound,
-    question: hostActiveQ,
-    timestamp: Date.now()
-  }));
-  localStorage.setItem('host_player_answers_' + hostActiveRound + '_' + hostActiveQ, JSON.stringify({}));
+  sendWS({type:'host_push_question', round:hostActiveRound, question:hostActiveQ});
 
   showToast('📢 题目已推送！');
   hostActiveQ++;
@@ -1759,29 +1765,17 @@ function hostNextRound() {
   hostActiveQ = 0;
   hostSimAnswers = {};
   if (hostActiveRound >= quizData.length) hostActiveRound = 0;
-  localStorage.setItem('host_active_round', JSON.stringify({round:hostActiveRound, question:-1, action:'round_select'}));
+  sendWS({type:'host_select_round', round:hostActiveRound});
   renderHostPanel();
 }
 
 function updateHostStats() {
-  // Simulate player answers (in real deployment, read from WebSocket)
-  const totalPlayers = playerData.length || 16;
-  const answered = Math.floor(Math.random() * totalPlayers * 0.8);
-  const correct = Math.floor(answered * (0.5 + Math.random() * 0.3));
-  document.getElementById('host-answered').textContent = answered;
-  document.getElementById('host-total').textContent = totalPlayers;
-  document.getElementById('host-correct').textContent = Math.round((correct/Math.max(1,answered))*100) + '%';
+  // Real data comes via WebSocket answers_update messages
+  // Show initial state only if not yet connected
+  document.getElementById('host-answered').textContent = '0';
+  document.getElementById('host-total').textContent = playerData.length || 0;
+  document.getElementById('host-correct').textContent = '--';
 }
-
-// Listen for host broadcast (simulated multi-device sync)
-window.addEventListener('storage', function(e) {
-  if (e.key === 'host_active_question') {
-    try {
-      const data = JSON.parse(e.newValue);
-      handleHostQuestion(data.round, data.question);
-    } catch(ex) {}
-  }
-});
 
 function handleHostQuestion(roundIdx, qIdx) {
   if (currentPlayer && currentPlayer.isHost) return; // host doesn't answer
@@ -1889,20 +1883,30 @@ function renderGuide() {
 
 // ========== WEBSOCKET CLIENT ==========
 let wsClient = null;
+let wsReconnectTimer = null;
+
+function sendWS(data) {
+  if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+    wsClient.send(JSON.stringify(data));
+  }
+}
+
 function connectWebSocket() {
+  if (wsClient && wsClient.readyState === WebSocket.OPEN) return;
   const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsUrl = protocol + '//' + location.host;
+  const wsPort = location.port ? (parseInt(location.port) + 1) : 8081;
+  const wsUrl = protocol + '//' + location.hostname + ':' + wsPort;
   try {
     wsClient = new WebSocket(wsUrl);
     wsClient.onopen = () => {
       console.log('[WS] 已连接');
       if (currentPlayer) {
-        wsClient.send(JSON.stringify({
+        sendWS({
           type: 'register',
           name: currentPlayer.name,
           bus: currentPlayer.bus,
           isHost: currentPlayer.isHost || false
-        }));
+        });
       }
     };
     wsClient.onmessage = (e) => {
@@ -1910,24 +1914,26 @@ function connectWebSocket() {
         const msg = JSON.parse(e.data);
         if (msg.type === 'question' && !currentPlayer?.isHost) {
           handleHostQuestion(msg.round, msg.question);
-        } else if (msg.type === 'round_selected' && currentPlayer?.isHost) {
-          hostActiveRound = msg.round;
-          hostActiveQ = 0;
-          showToast('已切换到：' + (quizData[msg.round]?.round||''));
+        } else if (msg.type === 'players_update') {
+          // Update online count display if visible
+          const el = document.getElementById('host-total');
+          if (el && currentPlayer?.isHost) el.textContent = msg.online;
         } else if (msg.type === 'answers_update' && currentPlayer?.isHost) {
           document.getElementById('host-answered').textContent = msg.answered;
-          document.getElementById('host-total').textContent = msg.total;
-          document.getElementById('host-correct').textContent =
-            Math.round((Object.values(msg.answers).filter(a=>a.correct).length/Math.max(1,msg.answered))*100) + '%';
+          document.getElementById('host-total').textContent = msg.online || msg.total;
+          document.getElementById('host-correct').textContent = msg.correctRate + '%';
         }
       } catch(ex) {}
     };
     wsClient.onclose = () => {
       console.log('[WS] 断开，5秒后重连...');
-      setTimeout(connectWebSocket, 5000);
+      wsReconnectTimer = setTimeout(connectWebSocket, 5000);
+    };
+    wsClient.onerror = () => {
+      console.log('[WS] 连接失败，离线模式');
     };
   } catch(e) {
-    console.log('[WS] 离线模式 (无服务器)');
+    console.log('[WS] 离线模式 (无服务端)');
   }
 }
 
