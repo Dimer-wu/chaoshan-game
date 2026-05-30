@@ -32,7 +32,12 @@ echo [OK] qrcode 就绪
 
 :: Start HTTP server
 echo [*] 启动 HTTP 服务...
-start "潮汕HTTP" /min cmd /c "cd /d \"%~dp0\" && python server\server.py"
+if not exist "server\server.py" (
+    echo [X] 找不到 server\server.py！请确认文件存在
+    pause
+    exit /b
+)
+start "" /B python "server\server.py"
 timeout /t 3 >nul
 
 :: Verify
